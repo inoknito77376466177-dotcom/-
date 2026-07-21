@@ -932,38 +932,15 @@
     <div class="section-head reveal">
       <div class="eyebrow"><svg class="ic"><use href="#ic-crown"/></svg> РУКОВОДСТВО ГОСУДАРСТВА</div>
       <h2 class="display-font">Стафф</h2>
-      <p>Люди, которые управляют ИСР и отвечают за порядок на сервере.</p>
+      <p>Люди, которые управляют ИСР и отвечают за порядок на сервере. Список подгружается из файла <span class="mono" style="font-size:13px;">staff.json</span>.</p>
     </div>
 
-    <div class="staff-grid reveal">
-      <div class="staff-card">
-        <div class="staff-top">
-          <div class="staff-avatar" style="background:var(--ink);color:var(--yellow);">GR</div>
-        </div>
-        <h3>GrEcHkA</h3>
-        <div class="staff-rank">Президент</div>
-      </div>
-      <div class="staff-card">
-        <div class="staff-top">
-          <div class="staff-avatar" style="background:var(--yellow-deep);color:var(--ink);">К</div>
-        </div>
-        <h3>$Kirill$</h3>
-        <div class="staff-rank">Вице-президент</div>
-      </div>
-      <div class="staff-card">
-        <div class="staff-top">
-          <div class="staff-avatar" style="background:var(--steel-2);color:var(--yellow);">РК</div>
-        </div>
-        <h3>РОБОКОП</h3>
-        <div class="staff-rank">Создатель сайта, зам. президента</div>
-      </div>
-      <div class="staff-card">
-        <div class="staff-top">
-          <div class="staff-avatar" style="background:var(--steel-2);color:var(--yellow);">H2</div>
-        </div>
-        <h3>HACKER2912</h3>
-        <div class="staff-rank">2-й зам. президента</div>
-      </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+      <button class="chat-back" id="refreshStaff" style="color:var(--ink-soft);"><svg class="ic ic-sm"><use href="#ic-dots"/></svg> Обновить список</button>
+    </div>
+
+    <div class="staff-grid reveal" id="staffList">
+      <div class="update-state" style="grid-column:1/-1;">Загрузка стаффа...</div>
     </div>
   </section>
 
@@ -1260,6 +1237,48 @@
   }
   document.getElementById('refreshUpdates')?.addEventListener('click', loadUpdates);
   loadUpdates();
+
+  /* ===== STAFF TAB: loads staff list from staff.json ===== */
+  const STAFF_PALETTE = [
+    {bg:'var(--ink)', fg:'var(--yellow)'},
+    {bg:'var(--yellow-deep)', fg:'var(--ink)'},
+    {bg:'var(--steel-2)', fg:'var(--yellow)'}
+  ];
+  function autoInitials(name){
+    const clean = (name || '').replace(/[^a-zA-Zа-яА-ЯёЁ0-9]/g, '');
+    return (clean.slice(0,2) || '??').toUpperCase();
+  }
+  function renderStaff(items){
+    const list = document.getElementById('staffList');
+    if (!Array.isArray(items) || items.length === 0){
+      list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">Список стаффа пуст.</div>';
+      return;
+    }
+    list.innerHTML = items.map(function(s, i){
+      const pal = STAFF_PALETTE[i % STAFF_PALETTE.length];
+      const initials = s.avatar ? escapeHtml(s.avatar) : autoInitials(s.name);
+      return '<div class="staff-card">'
+        + '<div class="staff-top"><div class="staff-avatar" style="background:' + pal.bg + ';color:' + pal.fg + ';">' + initials + '</div></div>'
+        + '<h3>' + escapeHtml(s.name || 'Без имени') + '</h3>'
+        + '<div class="staff-rank">' + escapeHtml(s.rank || '') + '</div>'
+        + '</div>';
+    }).join('');
+  }
+  function loadStaff(){
+    const list = document.getElementById('staffList');
+    list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">Загрузка стаффа...</div>';
+    fetch('staff.json', {cache:'no-store'})
+      .then(function(res){
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(renderStaff)
+      .catch(function(err){
+        list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">⚠️ Не удалось загрузить staff.json.<br>Проверь, что файл лежит рядом с сайтом на GitHub Pages.<br><span style="opacity:.6;">(' + escapeHtml(err.message) + ')</span></div>';
+      });
+  }
+  document.getElementById('refreshStaff')?.addEventListener('click', loadStaff);
+  loadStaff();
 </script>
 
 </body>
