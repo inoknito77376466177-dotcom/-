@@ -71,6 +71,41 @@
   }
   .ch-chip:hover{background:var(--ink);color:var(--yellow);border-color:var(--ink);}
   .ch-name{display:flex;align-items:center;gap:8px;}
+
+  /* ===== UPDATES ===== */
+  .update-state{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    padding:30px 0;
+    text-align:center;
+    border:1px dashed var(--line);
+  }
+  .update-card{
+    display:grid;
+    grid-template-columns:150px 1fr;
+    gap:24px;
+    border-top:1px solid var(--line);
+    padding:26px 0;
+    transition:background .18s;
+  }
+  .update-card:hover{background:rgba(245,196,0,0.06);}
+  .update-card:first-child{border-top:none;}
+  .update-card:last-child{border-bottom:1px solid var(--line);}
+  .update-date{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--yellow-deep);font-weight:500;}
+  .update-tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    background:var(--yellow);
+    color:var(--ink);
+    padding:3px 8px;
+    margin-bottom:10px;
+  }
+  .update-card h3{font-size:17px;font-weight:600;text-transform:none;margin-bottom:8px;}
+  .update-card p{font-size:14px;color:var(--ink-soft);line-height:1.7;margin:0;white-space:pre-line;}
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important;}
   }
@@ -650,6 +685,7 @@
       <button data-page="laws">Законы</button>
       <button data-page="staff">Стафф</button>
       <button data-page="channels">Каналы на сервере</button>
+      <button data-page="updates">Обновления</button>
     </nav>
     <a class="btn-join-top" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener">Вступить в ИСР</a>
     <button class="burger" id="burgerBtn" aria-label="Открыть меню"><span></span><span></span><span></span></button>
@@ -662,6 +698,7 @@
   <button data-page="laws">Законы</button>
   <button data-page="staff">Стафф</button>
   <button data-page="channels">Каналы на сервере</button>
+  <button data-page="updates">Обновления</button>
 </nav>
 
 <main>
@@ -995,6 +1032,23 @@
     </div>
   </section>
 
+  <!-- UPDATES -->
+  <section class="page" id="updates">
+    <div class="section-head reveal">
+      <div class="eyebrow"><svg class="ic"><use href="#ic-megaphone"/></svg> ДОСКА ОБЪЯВЛЕНИЙ</div>
+      <h2 class="display-font">Обновления</h2>
+      <p>Новости и изменения на сервере. Список подгружается из файла <span class="mono" style="font-size:13px;">updates.json</span> — стафф добавляет туда новую запись, и она сразу появляется здесь.</p>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+      <button class="chat-back" id="refreshUpdates" style="color:var(--ink-soft);"><svg class="ic ic-sm"><use href="#ic-dots"/></svg> Обновить список</button>
+    </div>
+
+    <div id="updatesList">
+      <div class="update-state">Загрузка обновлений...</div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -1012,6 +1066,7 @@
       <button onclick="showPage('laws')">Законы</button>
       <button onclick="showPage('staff')">Стафф</button>
       <button onclick="showPage('channels')">Каналы</button>
+      <button onclick="showPage('updates')">Обновления</button>
     </div>
     <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener">Вступить в ИСР</a>
   </div>
@@ -1158,6 +1213,53 @@
   }
   window.addEventListener('scroll', updateProgress, {passive:true});
   updateProgress();
+
+  /* ===== UPDATES TAB: loads announcements from updates.json ===== */
+  const UPDATES_ICONS = {
+    'обновление':'megaphone','фикс':'tools','ивент':'flag','событие':'flag',
+    'важно':'warning','набор':'inbox','предупреждение':'warning'
+  };
+  function pickUpdateIcon(tag){
+    const key = (tag || '').toLowerCase().trim();
+    return UPDATES_ICONS[key] || 'document';
+  }
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : String(str);
+    return d.innerHTML;
+  }
+  function renderUpdates(items){
+    const list = document.getElementById('updatesList');
+    if (!Array.isArray(items) || items.length === 0){
+      list.innerHTML = '<div class="update-state">Обновлений пока нет — загляните позже.</div>';
+      return;
+    }
+    list.innerHTML = items.map(function(u){
+      const ic = pickUpdateIcon(u.tag);
+      return '<div class="update-card">'
+        + '<div class="update-date">' + escapeHtml(u.date || '') + '</div>'
+        + '<div>'
+        + (u.tag ? '<span class="update-tag"><svg class="ic ic-sm"><use href="#ic-' + ic + '"/></svg> ' + escapeHtml(u.tag) + '</span><br>' : '')
+        + '<h3>' + escapeHtml(u.title || 'Без названия') + '</h3>'
+        + '<p>' + escapeHtml(u.text || '') + '</p>'
+        + '</div></div>';
+    }).join('');
+  }
+  function loadUpdates(){
+    const list = document.getElementById('updatesList');
+    list.innerHTML = '<div class="update-state">Загрузка обновлений...</div>';
+    fetch('updates.json', {cache:'no-store'})
+      .then(function(res){
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(renderUpdates)
+      .catch(function(err){
+        list.innerHTML = '<div class="update-state">⚠️ Не удалось загрузить updates.json.<br>Проверь, что файл лежит рядом с сайтом на GitHub Pages.<br><span style="opacity:.6;">(' + escapeHtml(err.message) + ')</span></div>';
+      });
+  }
+  document.getElementById('refreshUpdates')?.addEventListener('click', loadUpdates);
+  loadUpdates();
 </script>
 
 </body>
