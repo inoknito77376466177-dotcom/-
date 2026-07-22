@@ -48,6 +48,18 @@
     font-family:'IBM Plex Sans', sans-serif;
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
+    position:relative;
+  }
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    opacity:0.05;
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:120px 120px;
   }
   h1,h2,h3,.disp{
     font-family:'Oswald', sans-serif;
@@ -293,8 +305,21 @@
   .mobile-nav button.active{color:var(--yellow);}
 
   main{max-width:1080px;margin:0 auto;padding:0 6vw 90px;}
-  .page{display:none;}
+  .page{display:none;position:relative;z-index:0;}
   .page.active{display:block;animation:fade .3s ease;}
+  .page-watermark{
+    position:absolute;
+    top:30px;right:-36px;
+    width:320px;height:320px;
+    stroke:currentColor;
+    color:var(--ink);
+    fill:none;
+    stroke-width:0.35;
+    opacity:0.04;
+    z-index:-1;
+    pointer-events:none;
+  }
+  @media(max-width:820px){ .page-watermark{display:none;} }
   @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
   /* ===== reveal on scroll ===== */
@@ -321,6 +346,38 @@
     z-index:0;
   }
   .hero > *{position:relative;z-index:1;}
+  .hero::after{
+    content:"ИСР";
+    position:absolute;
+    right:-10px;bottom:-42px;
+    font-family:'Unbounded',sans-serif;
+    font-weight:900;
+    font-size:min(22vw,260px);
+    line-height:1;
+    letter-spacing:-0.03em;
+    color:var(--ink);
+    opacity:0.028;
+    z-index:0;
+    pointer-events:none;
+  }
+
+  /* ===== corner registration ticks (technical-drawing accent) ===== */
+  .corner-marks{position:relative;}
+  .corner-marks::before{
+    content:"";
+    position:absolute;
+    inset:-1px;
+    pointer-events:none;
+    background:
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) top left / 11px 2px no-repeat,
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) top left / 2px 11px no-repeat,
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) top right / 11px 2px no-repeat,
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) top right / 2px 11px no-repeat,
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) bottom left / 11px 2px no-repeat,
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) bottom left / 2px 11px no-repeat,
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) bottom right / 11px 2px no-repeat,
+      linear-gradient(var(--yellow-deep),var(--yellow-deep)) bottom right / 2px 11px no-repeat;
+  }
   .eyebrow{
     display:inline-flex;
     align-items:center;
@@ -768,7 +825,7 @@
           <span id="discordLiveText">подключение к Discord...</span>
         </div>
       </div>
-      <div class="floorbar">
+      <div class="floorbar corner-marks">
         <div><div class="num"><svg class="ic ic-lg"><use href="#ic-document"/></svg> 04</div><div class="lbl">свода законов</div></div>
         <div><div class="num"><svg class="ic ic-lg"><use href="#ic-calendar"/></svg> <span id="daysCount">—</span></div><div class="lbl">дней с основания</div></div>
         <div><div class="num"><svg class="ic ic-lg"><use href="#ic-shield"/></svg> 24/7</div><div class="lbl">модерация без выходных</div></div>
@@ -793,6 +850,7 @@
 
   <!-- HISTORY -->
   <section class="page" id="history">
+    <svg class="page-watermark"><use href="#ic-archive"/></svg>
     <div class="section-head reveal">
       <div class="eyebrow"><svg class="ic"><use href="#ic-archive"/></svg> АРХИВ ГОСУДАРСТВА</div>
       <h2 class="display-font">История создания</h2>
@@ -861,6 +919,7 @@
 
   <!-- LAWS -->
   <section class="page" id="laws">
+    <svg class="page-watermark"><use href="#ic-scale"/></svg>
     <div class="section-head reveal">
       <div class="eyebrow"><svg class="ic"><use href="#ic-scale"/></svg> ЗАКОНОДАТЕЛЬСТВО ИСР</div>
       <h2 class="display-font">Законы</h2>
@@ -873,7 +932,7 @@
     </div>
     <div class="law-search-status" id="lawSearchStatus"></div>
 
-    <div class="codex-desig reveal">
+    <div class="codex-desig reveal corner-marks">
       <div class="t"><svg class="ic"><use href="#ic-document"/></svg> Обозначения</div>
       <ul>
         <li><b>ИСР</b> — Индустриальный Сервер Работяг</li>
@@ -988,6 +1047,7 @@
 
   <!-- STAFF -->
   <section class="page" id="staff">
+    <svg class="page-watermark"><use href="#ic-crown"/></svg>
     <div class="section-head reveal">
       <div class="eyebrow"><svg class="ic"><use href="#ic-crown"/></svg> РУКОВОДСТВО ГОСУДАРСТВА</div>
       <h2 class="display-font">Стафф</h2>
@@ -1005,6 +1065,7 @@
 
   <!-- CHANNELS -->
   <section class="page" id="channels">
+    <svg class="page-watermark"><use href="#ic-grid"/></svg>
     <div class="section-head reveal">
       <div class="eyebrow"><svg class="ic"><use href="#ic-grid"/></svg> СТРУКТУРА СЕРВЕРА</div>
       <h2 class="display-font">Каналы на сервере</h2>
@@ -1070,6 +1131,7 @@
 
   <!-- UPDATES -->
   <section class="page" id="updates">
+    <svg class="page-watermark"><use href="#ic-megaphone"/></svg>
     <div class="section-head reveal">
       <div class="eyebrow"><svg class="ic"><use href="#ic-megaphone"/></svg> ДОСКА ОБЪЯВЛЕНИЙ</div>
       <h2 class="display-font">Обновления</h2>
@@ -1351,7 +1413,7 @@
   /* ===== DISCORD LIVE ONLINE COUNTER =====
      Как включить: Discord -> Настройки сервера -> Виджет -> включить
      "Включить виджет сервера", там же скопировать Server ID и вставить ниже. */
-  const DISCORD_GUILD_ID = '1481265647936602204';
+  const DISCORD_GUILD_ID = '1481265647936602204'.trim();
   function loadDiscordLive(){
     const dot = document.getElementById('liveDot');
     const text = document.getElementById('discordLiveText');
@@ -1360,13 +1422,21 @@
       return;
     }
     fetch('https://discord.com/api/guilds/' + DISCORD_GUILD_ID + '/widget.json')
-      .then(function(res){ if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+      .then(function(res){
+        if (!res.ok){
+          return res.json().catch(function(){ return null; }).then(function(body){
+            const reason = body && body.message ? body.message : ('HTTP ' + res.status);
+            throw new Error(reason);
+          });
+        }
+        return res.json();
+      })
       .then(function(data){
         text.textContent = data.presence_count + ' участников онлайн';
         dot.classList.add('on');
       })
-      .catch(function(){
-        text.textContent = 'не удалось получить статус Discord';
+      .catch(function(err){
+        text.textContent = 'не удалось получить статус Discord (' + err.message + ')';
         dot.classList.remove('on');
       });
   }
