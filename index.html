@@ -913,7 +913,7 @@
         </div>
         <div class="discord-live" id="discordLive">
           <span class="live-dot" id="liveDot"></span>
-          <span id="discordLiveText">подключение к Discord...</span>
+          <span id="discordLiveText" data-i18n="discord.connecting">подключение к Discord...</span>
         </div>
       </div>
       <div class="floorbar corner-marks">
@@ -1150,7 +1150,7 @@
     </div>
 
     <div class="staff-grid reveal" id="staffList">
-      <div class="update-state" style="grid-column:1/-1;">Загрузка стаффа...</div>
+      <div class="update-state" style="grid-column:1/-1;" data-i18n="loading.staff">Загрузка стаффа...</div>
     </div>
   </section>
 
@@ -1234,7 +1234,7 @@
     </div>
 
     <div id="updatesList">
-      <div class="update-state">Загрузка обновлений...</div>
+      <div class="update-state" data-i18n="loading.updates">Загрузка обновлений...</div>
     </div>
   </section>
 
@@ -1451,29 +1451,15 @@
 
   function bootSequence(){
     const lines = [
-      ['инициализация системы ИСР...', 'sys'],
-      ['доступ: разрешён', 'sys'],
-      ['статус модерации: 24/7 · в сети', 'sys'],
-      ['введите help для списка команд', 'sys']
+      [t('console.boot1'), 'sys'],
+      [t('console.boot2'), 'sys'],
+      [t('console.boot3'), 'sys'],
+      [t('console.boot4'), 'sys']
     ];
     lines.forEach((l, i) => {
       setTimeout(() => cPrint(l[0], l[1]), i * 220);
     });
   }
-
-  const CMD_HELP = [
-    'home / history / laws / staff / channels / updates — перейти на страницу',
-    'status — статус сервера и модерации',
-    'online — участников в Discord сейчас',
-    '404 — открыть тестовую страницу 404',
-    'discord — открыть инвайт в Discord',
-    'theme <light|dark|system> — сменить тему',
-    'lang <ru|en> — сменить язык интерфейса',
-    'date — текущая дата и время',
-    'whoami — кто вы в системе ИСР',
-    'clear — очистить экран',
-    'exit — закрыть консоль'
-  ];
 
   const PAGE_CMDS = ['home','history','laws','staff','channels','updates'];
 
@@ -1489,65 +1475,65 @@
     const arg = parts[1];
 
     if (cmd === 'help'){
-      CMD_HELP.forEach(l => cPrint(l, 'sys'));
+      t('console.help').split('|').forEach(l => cPrint(l, 'sys'));
     } else if (PAGE_CMDS.includes(cmd)){
-      cPrint('переход: ' + cmd, 'ok');
+      cPrint(t('console.goto') + cmd, 'ok');
       showPage(cmd);
       setTimeout(closeConsole, 260);
     } else if (cmd === 'status'){
       const founded = new Date(2026, 2, 11);
       const days = Math.max(0, Math.floor((new Date() - founded) / 86400000));
-      cPrint('модерация: 24/7 · в сети', 'resp');
-      cPrint('дней с основания: ' + days, 'resp');
-      cPrint('запрос статуса Discord...', 'sys');
+      cPrint(t('console.modStatus'), 'resp');
+      cPrint(t('console.daysSince') + days, 'resp');
+      cPrint(t('console.requesting'), 'sys');
       if (!DISCORD_GUILD_ID){
-        cPrint('онлайн: счётчик не настроен', 'sys');
+        cPrint(t('console.notConfigured'), 'sys');
       } else {
         fetch('https://discord.com/api/guilds/' + DISCORD_GUILD_ID + '/widget.json')
           .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
-          .then(d => cPrint('онлайн сейчас: ' + d.presence_count, 'ok'))
-          .catch(err => cPrint('не удалось получить статус Discord (' + err.message + ')', 'err'));
+          .then(d => cPrint(t('console.onlineNow') + d.presence_count, 'ok'))
+          .catch(err => cPrint(t('console.discordError') + err.message + ')', 'err'));
       }
     } else if (cmd === 'online'){
       if (!DISCORD_GUILD_ID){
-        cPrint('счётчик онлайна не настроен', 'err');
+        cPrint(t('console.notConfigured'), 'err');
       } else {
-        cPrint('запрос...', 'sys');
+        cPrint(t('console.requesting'), 'sys');
         fetch('https://discord.com/api/guilds/' + DISCORD_GUILD_ID + '/widget.json')
           .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
-          .then(d => cPrint(d.presence_count + ' участников онлайн', 'ok'))
-          .catch(err => cPrint('ошибка: ' + err.message, 'err'));
+          .then(d => cPrint(t('discord.online').replace('{n}', d.presence_count), 'ok'))
+          .catch(err => cPrint(t('console.discordError') + err.message + ')', 'err'));
       }
     } else if (cmd === '404'){
-      cPrint('открываю тестовую 404-страницу...', 'ok');
+      cPrint(t('console.opening404'), 'ok');
       window.open('404.html', '_blank');
     } else if (cmd === 'discord'){
-      cPrint('открываю Discord-приглашение...', 'ok');
+      cPrint(t('console.openingDiscord'), 'ok');
       window.open('https://discord.gg/hwzNAGqSbf', '_blank');
     } else if (cmd === 'theme'){
       if (['light','dark','system'].includes(arg)){
         setTheme(arg);
-        cPrint('тема изменена: ' + arg, 'ok');
+        cPrint(t('console.themeChanged') + arg, 'ok');
       } else {
-        cPrint('использование: theme <light|dark|system>', 'err');
+        cPrint(t('console.themeUsage'), 'err');
       }
     } else if (cmd === 'lang'){
       if (['ru','en','system'].includes(arg)){
         setLanguage(arg);
-        cPrint('язык изменён: ' + arg, 'ok');
+        cPrint(t('console.langChanged') + arg, 'ok');
       } else {
-        cPrint('использование: lang <ru|en|system>', 'err');
+        cPrint(t('console.langUsage'), 'err');
       }
     } else if (cmd === 'date'){
-      cPrint(new Date().toLocaleString('ru-RU'), 'resp');
+      cPrint(new Date().toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'en-US'), 'resp');
     } else if (cmd === 'whoami'){
-      cPrint('гость системы · уровень доступа: работяга', 'resp');
+      cPrint(t('console.whoami'), 'resp');
     } else if (cmd === 'clear' || cmd === 'cls'){
       cOut.innerHTML = '';
     } else if (cmd === 'exit' || cmd === 'quit'){
       closeConsole();
     } else {
-      cPrint('команда не найдена: ' + cmd + ' — введите help', 'err');
+      cPrint(t('console.unknown') + cmd + t('console.unknownHint'), 'err');
     }
   }
 
@@ -1570,9 +1556,17 @@
     }
   });
 
-  /* ================= SETTINGS: theme + language ================= */
-  let themeMode = 'system';
-  let langMode = 'system';
+  /* ================= SETTINGS: theme + language (persisted via localStorage, with safe fallback) ================= */
+  function storageGet(key){
+    try { return localStorage.getItem(key); } catch(e){ return null; }
+  }
+  function storageSet(key, val){
+    try { localStorage.setItem(key, val); } catch(e){ /* storage unavailable — setting just won't persist */ }
+  }
+
+  let themeMode = storageGet('isr-theme') || 'system';
+  let langMode = storageGet('isr-lang') || 'system';
+  let currentLang = 'ru';
 
   function applyThemeToDOM(mode){
     let effective = mode;
@@ -1583,6 +1577,7 @@
   }
   function setTheme(mode){
     themeMode = mode;
+    storageSet('isr-theme', mode);
     applyThemeToDOM(mode);
     document.querySelectorAll('#themeGroup .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.value === mode));
   }
@@ -1592,12 +1587,17 @@
 
   function setLanguage(mode){
     langMode = mode;
+    storageSet('isr-lang', mode);
     let effective = mode;
     if (mode === 'system'){
       effective = (navigator.language || 'ru').toLowerCase().startsWith('ru') ? 'ru' : 'en';
     }
+    currentLang = effective;
     applyLanguage(effective);
     document.querySelectorAll('#langGroup .seg-btn').forEach(b => b.classList.toggle('active', b.dataset.value === mode));
+  }
+  function t(key){
+    return (I18N[currentLang] && I18N[currentLang][key]) || (I18N.ru[key]) || key;
   }
 
   document.getElementById('themeGroup').addEventListener('click', (e) => {
@@ -1646,7 +1646,39 @@
       'footer.note':'Laws are in effect across the entire nation.',
       'settings.title':'Settings','settings.theme':'Theme','settings.lang':'Language',
       'theme.light':'Light','theme.dark':'Dark','theme.system':'System',
-      'lang.ru':'\u0420\u0443\u0441\u0441\u043a\u0438\u0439','lang.en':'English','lang.system':'System'
+      'lang.ru':'\u0420\u0443\u0441\u0441\u043a\u0438\u0439','lang.en':'English','lang.system':'System',
+      'discord.connecting':'connecting to Discord...',
+      'discord.online':'{n} online now',
+      'discord.notConfigured':'online counter not configured',
+      'discord.error':'failed to get Discord status',
+      'loading.updates':'Loading updates...',
+      'loading.staff':'Loading staff...',
+      'error.updates':'Failed to load updates.',
+      'error.staff':'Failed to load staff.',
+      'laws.foundPrefix':'Found: ',
+      'laws.notFound':'Nothing found',
+      'clock.shift':'SHIFT',
+      'console.boot1':'initializing ISR system...',
+      'console.boot2':'access: granted',
+      'console.boot3':'moderation status: 24/7 \u00b7 online',
+      'console.boot4':'type help for a list of commands',
+      'console.help':'home / history / laws / staff / channels / updates \u2014 go to page|status \u2014 server and moderation status|online \u2014 members online in Discord right now|404 \u2014 open the test 404 page|discord \u2014 open the Discord invite|theme <light|dark|system> \u2014 change theme|lang <ru|en|system> \u2014 change interface language|date \u2014 current date and time|whoami \u2014 who you are in the ISR system|clear \u2014 clear the screen|exit \u2014 close the console',
+      'console.goto':'navigating: ',
+      'console.modStatus':'moderation: 24/7 \u00b7 online',
+      'console.daysSince':'days since founding: ',
+      'console.requesting':'requesting Discord status...',
+      'console.notConfigured':'online: counter not configured',
+      'console.onlineNow':'online now: ',
+      'console.discordError':'failed to get Discord status (',
+      'console.opening404':'opening the test 404 page...',
+      'console.openingDiscord':'opening the Discord invite...',
+      'console.themeChanged':'theme changed: ',
+      'console.themeUsage':'usage: theme <light|dark|system>',
+      'console.langChanged':'language changed: ',
+      'console.langUsage':'usage: lang <ru|en|system>',
+      'console.whoami':'guest \u00b7 access level: worker',
+      'console.unknown':'command not found: ',
+      'console.unknownHint':' \u2014 type help'
     },
     ru: {
       'nav.home':'Главная','nav.history':'История создания','nav.laws':'Законы','nav.staff':'Стафф',
@@ -1672,7 +1704,39 @@
       'footer.note':'Законы действительны на всей территории государства',
       'settings.title':'Настройки','settings.theme':'Тема','settings.lang':'Язык',
       'theme.light':'Светлая','theme.dark':'Тёмная','theme.system':'Системная',
-      'lang.ru':'Русский','lang.en':'English','lang.system':'Системный'
+      'lang.ru':'Русский','lang.en':'English','lang.system':'Системный',
+      'discord.connecting':'подключение к Discord...',
+      'discord.online':'{n} участников онлайн',
+      'discord.notConfigured':'счётчик онлайна не настроен',
+      'discord.error':'не удалось получить статус Discord',
+      'loading.updates':'Загрузка обновлений...',
+      'loading.staff':'Загрузка стаффа...',
+      'error.updates':'Не удалось загрузить обновления.',
+      'error.staff':'Не удалось загрузить стафф.',
+      'laws.foundPrefix':'Найдено пунктов: ',
+      'laws.notFound':'Ничего не найдено',
+      'clock.shift':'СМЕНА',
+      'console.boot1':'инициализация системы ИСР...',
+      'console.boot2':'доступ: разрешён',
+      'console.boot3':'статус модерации: 24/7 · в сети',
+      'console.boot4':'введите help для списка команд',
+      'console.help':'home / history / laws / staff / channels / updates — перейти на страницу|status — статус сервера и модерации|online — участников в Discord сейчас|404 — открыть тестовую страницу 404|discord — открыть инвайт в Discord|theme <light|dark|system> — сменить тему|lang <ru|en|system> — сменить язык|date — текущая дата и время|whoami — кто вы в системе ИСР|clear — очистить экран|exit — закрыть консоль',
+      'console.goto':'переход: ',
+      'console.modStatus':'модерация: 24/7 · в сети',
+      'console.daysSince':'дней с основания: ',
+      'console.requesting':'запрос статуса Discord...',
+      'console.notConfigured':'онлайн: счётчик не настроен',
+      'console.onlineNow':'онлайн сейчас: ',
+      'console.discordError':'не удалось получить статус Discord (',
+      'console.opening404':'открываю тестовую 404-страницу...',
+      'console.openingDiscord':'открываю Discord-приглашение...',
+      'console.themeChanged':'тема изменена: ',
+      'console.themeUsage':'использование: theme <light|dark|system>',
+      'console.langChanged':'язык изменён: ',
+      'console.langUsage':'использование: lang <ru|en|system>',
+      'console.whoami':'гость системы · уровень доступа: работяга',
+      'console.unknown':'команда не найдена: ',
+      'console.unknownHint':' — введите help'
     }
   };
 
@@ -1689,6 +1753,11 @@
     });
   }
 
+  /* Apply the restored/system theme & language BEFORE anything below renders text,
+     so the very first paint (clock, live badges, lists) is already in the right language. */
+  setTheme(themeMode);
+  setLanguage(langMode);
+
   /* ================= COOL EXTRAS: shift clock + keyboard shortcuts ================= */
   const shiftClockEl = document.getElementById('shiftClock');
   function tickShiftClock(){
@@ -1697,7 +1766,7 @@
     const hh = String(now.getHours()).padStart(2,'0');
     const mm = String(now.getMinutes()).padStart(2,'0');
     const ss = String(now.getSeconds()).padStart(2,'0');
-    shiftClockEl.textContent = 'СМЕНА · ' + hh + ':' + mm + ':' + ss;
+    shiftClockEl.textContent = t('clock.shift') + ' · ' + hh + ':' + mm + ':' + ss;
   }
   tickShiftClock();
   setInterval(tickShiftClock, 1000);
@@ -1711,9 +1780,6 @@
       if (SHORTCUT_PAGES[idx]) showPage(SHORTCUT_PAGES[idx]);
     }
   });
-
-  setTheme('system');
-  setLanguage('system');
 
   const progressFill = document.getElementById('progressFill');
   function updateProgress(){
@@ -1759,7 +1825,7 @@
   }
   function loadUpdates(){
     const list = document.getElementById('updatesList');
-    list.innerHTML = '<div class="update-state">Загрузка обновлений...</div>';
+    list.innerHTML = '<div class="update-state">' + t('loading.updates') + '</div>';
     fetch('updates.json', {cache:'no-store'})
       .then(function(res){
         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1767,7 +1833,7 @@
       })
       .then(renderUpdates)
       .catch(function(err){
-        list.innerHTML = '<div class="update-state">Не удалось загрузить обновления.</div>';
+        list.innerHTML = '<div class="update-state">' + t('error.updates') + '</div>';
       });
   }
   document.getElementById('refreshUpdates')?.addEventListener('click', loadUpdates);
@@ -1801,7 +1867,7 @@
   }
   function loadStaff(){
     const list = document.getElementById('staffList');
-    list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">Загрузка стаффа...</div>';
+    list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">' + t('loading.staff') + '</div>';
     fetch('staff.json', {cache:'no-store'})
       .then(function(res){
         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1809,7 +1875,7 @@
       })
       .then(renderStaff)
       .catch(function(err){
-        list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">Не удалось загрузить стафф.</div>';
+        list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">' + t('error.staff') + '</div>';
       });
   }
   document.getElementById('refreshStaff')?.addEventListener('click', loadStaff);
@@ -1832,7 +1898,7 @@
     const dot = document.getElementById('liveDot');
     const text = document.getElementById('discordLiveText');
     if (!DISCORD_GUILD_ID){
-      text.textContent = 'счётчик онлайна не настроен';
+      text.textContent = t('discord.notConfigured');
       return;
     }
     fetch('https://discord.com/api/guilds/' + DISCORD_GUILD_ID + '/widget.json')
@@ -1846,11 +1912,11 @@
         return res.json();
       })
       .then(function(data){
-        text.textContent = data.presence_count + ' участников онлайн';
+        text.textContent = t('discord.online').replace('{n}', data.presence_count);
         dot.classList.add('on');
       })
       .catch(function(err){
-        text.textContent = 'не удалось получить статус Discord (' + err.message + ')';
+        text.textContent = t('discord.error');
         dot.classList.remove('on');
       });
   }
@@ -1884,7 +1950,7 @@
         total += groupMatches;
       });
       status.style.display = 'block';
-      status.textContent = total > 0 ? ('Найдено пунктов: ' + total) : 'Ничего не найдено';
+      status.textContent = total > 0 ? (t('laws.foundPrefix') + total) : t('laws.notFound');
     });
   })();
 </script>
