@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://isr.c6t.ru/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800;900&family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800;900&family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F3F0E6;
@@ -83,7 +83,7 @@
     letter-spacing:0.02em;
     margin:0;
   }
-  .mono{font-family:'IBM Plex Mono', monospace;}
+  .mono{font-family:'Space Mono', monospace;}
   .display-font{font-family:'Unbounded', sans-serif !important;font-weight:800;letter-spacing:-0.01em;}
 
   .ic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;flex-shrink:0;}
@@ -93,7 +93,7 @@
   .chgroup-head{display:flex;align-items:center;gap:10px;}
   .chgroup-count{
     margin-left:auto;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:11px;
     color:var(--paper-2);
     opacity:0.7;
@@ -110,7 +110,7 @@
     background:var(--paper-2);
     border:1px solid var(--line-strong);
     padding:8px 13px;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:12.5px;
     color:var(--ink-soft);
     transition:background .15s, color .15s, border-color .15s;
@@ -120,7 +120,7 @@
 
   /* ===== UPDATES ===== */
   .update-state{
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:13px;
     color:var(--ink-soft);
     padding:30px 0;
@@ -138,10 +138,10 @@
   .update-card:hover{background:rgba(245,196,0,0.06);}
   .update-card:first-child{border-top:none;}
   .update-card:last-child{border-bottom:1px solid var(--line);}
-  .update-date{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--yellow-deep);font-weight:500;}
+  .update-date{font-family:'Space Mono',monospace;font-size:13px;color:var(--yellow-deep);font-weight:700;}
   .update-tag{
     display:inline-block;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:0.06em;
@@ -157,7 +157,7 @@
   .discord-live{
     display:inline-flex;align-items:center;gap:9px;
     margin-top:22px;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:12.5px;
     color:var(--ink-soft);
     border:1px solid var(--line);
@@ -173,7 +173,7 @@
   .law-search-input{
     width:100%;
     padding:13px 14px 13px 42px;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:13.5px;
     border:1px solid var(--line-strong);
     background:var(--paper);
@@ -181,7 +181,7 @@
   }
   .law-search-input:focus{outline:none;border-color:var(--yellow-deep);}
   .law-search-input::placeholder{color:var(--ink-soft);opacity:0.7;}
-  .law-search-status{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);margin:8px 2px 0;display:none;}
+  .law-search-status{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-soft);margin:8px 2px 0;display:none;}
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important;}
   }
@@ -398,7 +398,7 @@
     display:inline-flex;
     align-items:center;
     gap:8px;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:11.5px;
     letter-spacing:0.08em;
     color:var(--yellow-deep);
@@ -489,7 +489,7 @@
   }
   .checklist li:hover{padding-left:6px;color:var(--ink);}
   .checklist li:first-child{border-top:none;}
-  .checklist b{color:var(--yellow-deep);font-weight:600;min-width:26px;font-family:'IBM Plex Mono',monospace;}
+  .checklist b{color:var(--yellow-deep);font-weight:700;min-width:26px;font-family:'Space Mono',monospace;}
 
   /* ===== SECTION HEAD ===== */
   .section-head{padding:56px 0 30px;}
@@ -510,7 +510,7 @@
   }
   .tl-item:hover{background:rgba(245,196,0,0.06);}
   .tl-item:last-child{border-bottom:1px solid var(--line);}
-  .tl-date{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--yellow-deep);font-weight:500;}
+  .tl-date{font-family:'Space Mono',monospace;font-size:13px;color:var(--yellow-deep);font-weight:700;}
   .tl-item h3{font-size:17px;font-weight:600;text-transform:none;margin-bottom:8px;}
   .tl-item p{font-size:14px;color:var(--ink-soft);line-height:1.7;margin:0;}
 
@@ -521,9 +521,9 @@
     margin:30px 0 40px;
     background:var(--paper-2);
   }
-  .codex-desig .t{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:var(--ink);margin-bottom:10px;}
+  .codex-desig .t{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;}
   .codex-desig ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px 20px;}
-  .codex-desig li{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);}
+  .codex-desig li{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-soft);}
   .codex-desig li b{color:var(--yellow-deep);}
 
   details.codex{
@@ -554,11 +554,11 @@
   }
   details.codex summary .cx-abbr{
     display:flex;align-items:center;gap:10px;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:12px;
     color:var(--paper-2);
   }
-  details.codex summary .chevron{transition:transform .2s;font-family:'IBM Plex Mono',monospace;font-size:16px;}
+  details.codex summary .chevron{transition:transform .2s;font-family:'Space Mono',monospace;font-size:16px;}
   details.codex[open] summary .chevron{transform:rotate(45deg);}
   .cx-body{padding:6px 22px 10px;}
   .cx-group{padding:16px 0;border-top:1px solid var(--line);}
@@ -581,9 +581,9 @@
     transition:background .15s;
   }
   .law-row:hover{background:var(--paper-2);}
-  .law-row .code{font-family:'IBM Plex Mono',monospace;color:var(--yellow-deep);font-weight:500;white-space:nowrap;}
+  .law-row .code{font-family:'Space Mono',monospace;color:var(--yellow-deep);font-weight:700;white-space:nowrap;}
   .law-row .txt{color:var(--ink-soft);}
-  .cx-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);opacity:0.8;padding:14px 0 6px;border-top:1px solid var(--line);margin-top:6px;}
+  .cx-meta{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink-soft);opacity:0.8;padding:14px 0 6px;border-top:1px solid var(--line);margin-top:6px;}
 
   /* ===== STAFF ===== */
   .staff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--line-strong);border:1px solid var(--line-strong);margin-top:10px;}
@@ -599,7 +599,7 @@
   }
   .staff-rank{
     display:inline-block;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:11px;
     text-transform:uppercase;
     letter-spacing:0.06em;
@@ -624,7 +624,7 @@
     display:flex;align-items:center;gap:10px;
   }
   .chgroup-head .idx{
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:11px;
     color:var(--paper-2);
     border:1px solid var(--paper-2);
@@ -646,7 +646,7 @@
   }
   .ch-row:hover{background:var(--paper-2);}
   .ch-row:first-of-type{border-top:none;margin-top:14px;}
-  .ch-row .ch-name{font-family:'IBM Plex Mono',monospace;color:var(--yellow-deep);font-weight:500;}
+  .ch-row .ch-name{font-family:'Space Mono',monospace;color:var(--yellow-deep);font-weight:700;}
   .ch-row .ch-desc{color:var(--ink-soft);line-height:1.6;}
   .chgroup-body{padding-bottom:16px;}
 
@@ -669,7 +669,7 @@
   .footer-logo{width:42px;height:42px;border:2px solid var(--yellow);border-radius:4px;overflow:hidden;flex-shrink:0;}
   .footer-logo img{width:100%;height:100%;object-fit:cover;display:block;}
   .f-brand{font-family:'Oswald',sans-serif;color:var(--steel-text);font-weight:600;letter-spacing:0.05em;font-size:15px;}
-  .f-note{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#8b897e;margin-top:4px;}
+  .f-note{font-family:'Space Mono',monospace;font-size:11.5px;color:#8b897e;margin-top:4px;}
   .footer-links{display:flex;gap:26px;flex-wrap:wrap;}
   .footer-links button{
     background:transparent;border:none;color:var(--steel-text-dim);
@@ -680,7 +680,7 @@
   .footer-bottom{
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
     padding:20px 0;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     font-size:11px;color:#7d7b71;
   }
 
@@ -698,7 +698,7 @@
     height:min(78vh,520px);
     background:var(--steel);
     border:2px solid var(--yellow);
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Space Mono',monospace;
     color:var(--yellow);
     display:flex;
     flex-direction:column;
@@ -749,7 +749,7 @@
   .console-prompt{color:var(--yellow-deep);font-size:13px;white-space:nowrap;}
   .console-input{
     flex:1;background:transparent;border:none;outline:none;
-    font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--steel-text);
+    font-family:'Space Mono',monospace;font-size:13px;color:var(--steel-text);
     caret-color:var(--yellow);
   }
   .console-input::placeholder{color:var(--steel-text-dim);opacity:0.4;}
@@ -767,7 +767,7 @@
 
   .chat-back{
     background:transparent;border:none;
-    font-family:'IBM Plex Mono',monospace;font-size:12px;
+    font-family:'Space Mono',monospace;font-size:12px;
     cursor:pointer;padding:0;
     transition:color .15s;
   }
@@ -790,7 +790,7 @@
   .settings-title{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;font-size:14px;}
   .settings-close{background:transparent;border:none;color:var(--ink);font-size:20px;cursor:pointer;padding:0 4px;}
   .settings-group-label{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;
     color:var(--ink-soft);margin:16px 0 8px;
   }
   .settings-group-label:first-of-type{margin-top:0;}
@@ -812,6 +812,68 @@
   @media(max-width:520px){
     .console-panel{height:min(82vh,560px);}
   }
+
+  /* ===== SCROLL TO TOP ===== */
+  .scroll-top{
+    position:fixed;
+    right:22px;bottom:22px;
+    width:46px;height:46px;
+    background:var(--ink);
+    color:var(--yellow);
+    border:2px solid var(--yellow);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    z-index:400;
+    opacity:0;
+    transform:translateY(12px);
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease, background .15s;
+  }
+  .scroll-top.show{opacity:1;transform:translateY(0);pointer-events:auto;}
+  .scroll-top:hover{background:var(--yellow);color:var(--ink);}
+
+  /* ===== TOASTS ===== */
+  .toast-stack{
+    position:fixed;
+    left:50%;
+    bottom:26px;
+    transform:translateX(-50%);
+    display:flex;flex-direction:column;gap:8px;
+    z-index:10000;
+    pointer-events:none;
+    align-items:center;
+  }
+  .toast{
+    background:var(--ink);
+    color:var(--yellow);
+    border:1px solid var(--yellow);
+    font-family:'Space Mono',monospace;
+    font-size:12.5px;
+    padding:10px 18px;
+    white-space:nowrap;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  /* ===== SPARK BURST CANVAS ===== */
+  #sparkCanvas{position:fixed;inset:0;z-index:9997;pointer-events:none;}
+
+  /* ===== STAGGERED CASCADE REVEAL ===== */
+  .stagger > *{
+    opacity:0;
+    transform:translateY(14px);
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .stagger.in-view > *{opacity:1;transform:translateY(0);}
+  .stagger.in-view > *:nth-child(1){transition-delay:.02s;}
+  .stagger.in-view > *:nth-child(2){transition-delay:.07s;}
+  .stagger.in-view > *:nth-child(3){transition-delay:.12s;}
+  .stagger.in-view > *:nth-child(4){transition-delay:.17s;}
+  .stagger.in-view > *:nth-child(5){transition-delay:.22s;}
+  .stagger.in-view > *:nth-child(6){transition-delay:.27s;}
+  .stagger.in-view > *:nth-child(n+7){transition-delay:.32s;}
   @media(max-width:820px){
     nav.tabs{display:none;}
     .burger{display:flex;}
@@ -863,6 +925,7 @@
   <symbol id="ic-cube" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12v9"/><path d="M12 12l8-4.5"/><path d="M12 12L4 7.5"/></symbol>
   <symbol id="ic-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15l5 5"/></symbol>
   <symbol id="ic-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></symbol>
+  <symbol id="ic-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></symbol>
 </svg>
 
 <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -919,10 +982,10 @@
         </div>
       </div>
       <div class="floorbar corner-marks">
-        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-document"/></svg> 04</div><div class="lbl" data-i18n="floorbar.laws">свода законов</div></div>
-        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-calendar"/></svg> <span id="daysCount">—</span></div><div class="lbl" data-i18n="floorbar.days">дней с основания</div></div>
+        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-document"/></svg> <span class="count-up" data-target="4" data-pad="2">00</span></div><div class="lbl" data-i18n="floorbar.laws">свода законов</div></div>
+        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-calendar"/></svg> <span id="daysCount" class="count-up" data-target="0">0</span></div><div class="lbl" data-i18n="floorbar.days">дней с основания</div></div>
         <div><div class="num"><svg class="ic ic-lg"><use href="#ic-shield"/></svg> 24/7</div><div class="lbl" data-i18n="floorbar.mod">модерация без выходных</div></div>
-        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-flag"/></svg> 1</div><div class="lbl" data-i18n="floorbar.party">правящая партия</div></div>
+        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-flag"/></svg> <span class="count-up" data-target="1">0</span></div><div class="lbl" data-i18n="floorbar.party">правящая партия</div></div>
       </div>
     </div>
 
@@ -1151,7 +1214,7 @@
       <button class="chat-back" id="refreshStaff" style="color:var(--ink-soft);"><svg class="ic ic-sm"><use href="#ic-dots"/></svg> <span data-i18n="refresh">Обновить список</span></button>
     </div>
 
-    <div class="staff-grid reveal" id="staffList">
+    <div class="staff-grid reveal stagger" id="staffList">
       <div class="update-state" style="grid-column:1/-1;" data-i18n="loading.staff">Загрузка стаффа...</div>
     </div>
   </section>
@@ -1242,6 +1305,10 @@
 
 </main>
 
+<canvas id="sparkCanvas"></canvas>
+<div class="toast-stack" id="toastStack"></div>
+<button class="scroll-top" id="scrollTopBtn" aria-label="Наверх"><svg class="ic ic-lg"><use href="#ic-arrow-up"/></svg></button>
+
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
@@ -1324,7 +1391,7 @@
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
   }, {threshold:0.12});
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  document.querySelectorAll('.reveal, .stagger').forEach(el => io.observe(el));
 
   /* ================= SECRET CONSOLE: desktop trigger (type 556644) ================= */
   const SECRET_CODE = '556644';
@@ -1405,7 +1472,7 @@
     if (!touchActive) return;
     touchActive = false;
     const matched = isCircleGesture(touchPts);
-    if (matched) openConsole();
+    if (matched){ openConsole(); showToast(t('toast.access')); }
     let op = 1;
     const fade = setInterval(() => {
       op -= 0.15;
@@ -1604,11 +1671,11 @@
 
   document.getElementById('themeGroup').addEventListener('click', (e) => {
     const btn = e.target.closest('.seg-btn');
-    if (btn) setTheme(btn.dataset.value);
+    if (btn){ setTheme(btn.dataset.value); showToast(btn.textContent.trim()); }
   });
   document.getElementById('langGroup').addEventListener('click', (e) => {
     const btn = e.target.closest('.seg-btn');
-    if (btn) setLanguage(btn.dataset.value);
+    if (btn){ setLanguage(btn.dataset.value); showToast(btn.textContent.trim()); }
   });
 
   function openSettings(){
@@ -1680,7 +1747,8 @@
       'console.langUsage':'usage: lang <ru|en|system>',
       'console.whoami':'guest \u00b7 access level: worker',
       'console.unknown':'command not found: ',
-      'console.unknownHint':' \u2014 type help'
+      'console.unknownHint':' \u2014 type help',
+      'toast.access':'Access granted'
     },
     ru: {
       'nav.home':'Главная','nav.history':'История создания','nav.laws':'Законы','nav.staff':'Стафф',
@@ -1738,7 +1806,8 @@
       'console.langUsage':'использование: lang <ru|en|system>',
       'console.whoami':'гость системы · уровень доступа: работяга',
       'console.unknown':'команда не найдена: ',
-      'console.unknownHint':' — введите help'
+      'console.unknownHint':' — введите help',
+      'toast.access':'Доступ получен'
     }
   };
 
@@ -1784,15 +1853,80 @@
   });
 
   const progressFill = document.getElementById('progressFill');
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
   function updateProgress(){
     const doc = document.documentElement;
     const scrollTop = window.scrollY || doc.scrollTop;
     const scrollHeight = doc.scrollHeight - doc.clientHeight;
     const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
     progressFill.style.width = pct + '%';
+    scrollTopBtn.classList.toggle('show', scrollTop > 480);
   }
   window.addEventListener('scroll', updateProgress, {passive:true});
   updateProgress();
+  scrollTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+  /* ================= TOASTS ================= */
+  function showToast(msg){
+    const stack = document.getElementById('toastStack');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    stack.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 300);
+    }, 2200);
+  }
+
+  /* ================= SPARK BURST (on join-button clicks) ================= */
+  const sparkCanvas = document.getElementById('sparkCanvas');
+  const sctx = sparkCanvas.getContext('2d');
+  function resizeSparkCanvas(){ sparkCanvas.width = window.innerWidth; sparkCanvas.height = window.innerHeight; }
+  resizeSparkCanvas();
+  window.addEventListener('resize', resizeSparkCanvas);
+
+  function burstSparks(x, y){
+    const colors = ['#F5C400', '#B8790A', '#EDEAE0'];
+    const particles = Array.from({length: 22}, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 4;
+      return {
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1.5,
+        life: 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: 2 + Math.random() * 2.5
+      };
+    });
+    let running = true;
+    function step(){
+      sctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+      let alive = false;
+      particles.forEach(p => {
+        if (p.life <= 0) return;
+        alive = true;
+        p.vy += 0.14;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        sctx.globalAlpha = Math.max(p.life, 0);
+        sctx.fillStyle = p.color;
+        sctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+      });
+      sctx.globalAlpha = 1;
+      if (alive) requestAnimationFrame(step);
+      else sctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('a.btn-primary, .btn-join-top').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      burstSparks(e.clientX, e.clientY);
+    });
+  });
 
   /* ===== UPDATES TAB: loads announcements from updates.json ===== */
   const UPDATES_ICONS = {
@@ -1866,6 +2000,10 @@
         + '<div class="staff-rank">' + escapeHtml(s.rank || '') + '</div>'
         + '</div>';
     }).join('');
+    /* Re-trigger the cascade reveal now that fresh cards just landed in the DOM */
+    list.classList.remove('in-view');
+    void list.offsetWidth;
+    requestAnimationFrame(() => list.classList.add('in-view'));
   }
   function loadStaff(){
     const list = document.getElementById('staffList');
@@ -1883,19 +2021,41 @@
   document.getElementById('refreshStaff')?.addEventListener('click', loadStaff);
   loadStaff();
 
-  /* ===== DAYS-FOUNDED COUNTER ===== */
+  /* ===== DAYS-FOUNDED COUNTER (feeds the count-up animation below) ===== */
   (function(){
     const founded = new Date(2026, 2, 11); // 11.03.2026
     const now = new Date();
     const diffDays = Math.max(0, Math.floor((now - founded) / 86400000));
     const el = document.getElementById('daysCount');
-    if (el) el.textContent = diffDays;
+    if (el) el.setAttribute('data-target', diffDays);
   })();
+
+  /* ===== COUNT-UP NUMBER ANIMATION ===== */
+  function easeOutQuad(x){ return 1 - (1 - x) * (1 - x); }
+  function animateCountUp(el){
+    if (el.dataset.counted) return;
+    el.dataset.counted = '1';
+    const target = parseInt(el.getAttribute('data-target'), 10) || 0;
+    const pad = parseInt(el.getAttribute('data-pad'), 10) || 0;
+    const duration = 900;
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min(1, (now - start) / duration);
+      const val = Math.round(target * easeOutQuad(p));
+      el.textContent = pad ? String(val).padStart(pad, '0') : String(val);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const countUpObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) animateCountUp(e.target); });
+  }, {threshold:0.4});
+  document.querySelectorAll('.count-up').forEach(el => countUpObserver.observe(el));
 
   /* ===== DISCORD LIVE ONLINE COUNTER =====
      Как включить: Discord -> Настройки сервера -> Виджет -> включить
      "Включить виджет сервера", там же скопировать Server ID и вставить ниже. */
-  const DISCORD_GUILD_ID = '1481265647936602204'.trim();
+  const DISCORD_GUILD_ID = ''.trim();
   function loadDiscordLive(){
     const dot = document.getElementById('liveDot');
     const text = document.getElementById('discordLiveText');
@@ -1924,22 +2084,66 @@
   }
   loadDiscordLive();
 
+  /* ===== SMOOTH LAW-CODEX ACCORDION ===== */
+  const codexEls = document.querySelectorAll('#laws details.codex');
+  function setCodexOpen(det, open, animate){
+    const body = det.querySelector('.cx-body');
+    if (open){
+      det.open = true;
+      if (animate){
+        body.style.maxHeight = '0px';
+        body.style.opacity = '0';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          body.style.maxHeight = body.scrollHeight + 'px';
+          body.style.opacity = '1';
+        }));
+        setTimeout(() => { if (det.open) body.style.maxHeight = 'none'; }, 380);
+      } else {
+        body.style.maxHeight = 'none';
+        body.style.opacity = '1';
+      }
+    } else {
+      if (animate){
+        body.style.maxHeight = body.scrollHeight + 'px';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          body.style.maxHeight = '0px';
+          body.style.opacity = '0';
+        }));
+        setTimeout(() => { det.open = false; }, 320);
+      } else {
+        det.open = false;
+        body.style.maxHeight = '0px';
+        body.style.opacity = '0';
+      }
+    }
+  }
+  codexEls.forEach((det, i) => {
+    const body = det.querySelector('.cx-body');
+    body.style.overflow = 'hidden';
+    body.style.transition = 'max-height .38s cubic-bezier(.4,0,.2,1), opacity .28s ease';
+    body.style.maxHeight = det.open ? 'none' : '0px';
+    body.style.opacity = det.open ? '1' : '0';
+    det.querySelector('summary').addEventListener('click', (e) => {
+      e.preventDefault();
+      setCodexOpen(det, !det.open, true);
+    });
+  });
+
   /* ===== LAW SEARCH ===== */
   (function(){
     const input = document.getElementById('lawSearch');
     const status = document.getElementById('lawSearchStatus');
-    const codexEls = document.querySelectorAll('#laws details.codex');
     if (!input) return;
     input.addEventListener('input', function(){
       const q = input.value.trim().toLowerCase();
       if (!q){
         document.querySelectorAll('#laws .law-row').forEach(function(r){ r.style.display = ''; });
         document.querySelectorAll('#laws .cx-group').forEach(function(g){ g.style.display = ''; });
-        codexEls.forEach(function(d, i){ d.open = (i === 0); });
+        codexEls.forEach(function(d, i){ setCodexOpen(d, i === 0, false); });
         status.style.display = 'none';
         return;
       }
-      codexEls.forEach(function(d){ d.open = true; });
+      codexEls.forEach(function(d){ setCodexOpen(d, true, false); });
       let total = 0;
       document.querySelectorAll('#laws .cx-group').forEach(function(group){
         let groupMatches = 0;
