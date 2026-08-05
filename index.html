@@ -1989,7 +1989,7 @@
   function loadUpdates(){
     const list = document.getElementById('updatesList');
     list.innerHTML = '<div class="update-state">' + t('loading.updates') + '</div>';
-    fetch('updates.json', {cache:'no-store'})
+    fetch('updates', {cache:'no-store'})
       .then(function(res){
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
@@ -2035,7 +2035,7 @@
   function loadStaff(){
     const list = document.getElementById('staffList');
     list.innerHTML = '<div class="update-state" style="grid-column:1/-1;">' + t('loading.staff') + '</div>';
-    fetch('staff.json', {cache:'no-store'})
+    fetch('staff', {cache:'no-store'})
       .then(function(res){
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
