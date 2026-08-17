@@ -1,10 +1,5 @@
 [
   {
-    "name": "HACKER2912",
-    "rank": "Президент",
-    "avatar": "https://cdn.discordapp.com/avatars/874244775623135312/cc58b003fa11912402a740ab256ca8cb.png?size=256"
-  },
-  {
     "name": "GrEcHkA",
     "rank": "Президент",
     "avatar": "https://cdn.discordapp.com/avatars/1116949186076745809/c1bdf5bb6b5dad72291cccebb43134b8.png?size=256"
@@ -13,6 +8,11 @@
     "name": "$Kirill$",
     "rank": "Вице-президент",
     "avatar": "https://cdn.discordapp.com/avatars/1470352550770376817/854ca8945261d2d0b5d50cdf9964e5a5.png?size=256"
+  },
+  {
+    "name": "HACKER2912",
+    "rank": "Зам. Президента",
+    "avatar": "https://cdn.discordapp.com/avatars/874244775623135312/cc58b003fa11912402a740ab256ca8cb.png?size=256"
   },
   {
     "name": "ROBOCOP",

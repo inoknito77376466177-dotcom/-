@@ -1,3 +1,24 @@
+"""
+Скрипт: тянет участников Discord-сервера по ролям
+и генерирует файл staffUPD (JSON) в формате, который ожидает сайт.
+
+РЕЖИМЫ ЗАПУСКА:
+1. Локально: заполни BOT_TOKEN / GUILD_ID ниже константами, либо
+   задай переменные окружения DISCORD_BOT_TOKEN / DISCORD_GUILD_ID.
+2. В GitHub Actions: токен и ID берутся из переменных окружения
+   (заданы в workflow из GitHub Secrets), константы можно не трогать.
+
+ПЕРЕД ЗАПУСКОМ:
+1. pip install requests
+2. Убедись, что в Discord Developer Portal у бота включён
+   "Server Members Intent" (Bot -> Privileged Gateway Intents).
+3. Бот должен быть добавлен на сервер (через OAuth2 invite-ссылку).
+4. Заполни ROLE_RANKS (список ID ролей и подписи рангов).
+
+ЗАПУСК ЛОКАЛЬНО:
+    python sync_staff.py
+"""
+
 import json
 import os
 import sys
