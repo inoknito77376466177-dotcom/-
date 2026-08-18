@@ -1,24 +1,3 @@
-"""
-Скрипт: тянет участников Discord-сервера по ролям
-и генерирует файл staffUPD (JSON) в формате, который ожидает сайт.
-
-РЕЖИМЫ ЗАПУСКА:
-1. Локально: заполни BOT_TOKEN / GUILD_ID ниже константами, либо
-   задай переменные окружения DISCORD_BOT_TOKEN / DISCORD_GUILD_ID.
-2. В GitHub Actions: токен и ID берутся из переменных окружения
-   (заданы в workflow из GitHub Secrets), константы можно не трогать.
-
-ПЕРЕД ЗАПУСКОМ:
-1. pip install requests
-2. Убедись, что в Discord Developer Portal у бота включён
-   "Server Members Intent" (Bot -> Privileged Gateway Intents).
-3. Бот должен быть добавлен на сервер (через OAuth2 invite-ссылку).
-4. Заполни ROLE_RANKS (список ID ролей и подписи рангов).
-
-ЗАПУСК ЛОКАЛЬНО:
-    python sync_staff.py
-"""
-
 import json
 import os
 import sys
@@ -29,12 +8,13 @@ import requests
 
 # Для локального теста можно вписать сюда прямо значения.
 # Если переменные окружения заданы (как в GitHub Actions) — они в приоритете.
-BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN", "ВСТАВЬ_СЮДА_ТОКЕН_БОТА")
-GUILD_ID = os.environ.get("DISCORD_GUILD_ID", "ВСТАВЬ_СЮДА_ID_СЕРВЕРА")
+BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN", "token")
+GUILD_ID = os.environ.get("DISCORD_GUILD_ID", "id")
 
+# ---- СТАФФ ----
 # Список ролей в порядке от старшей к младшей.
-# role_id — ID роли в Discord, rank — как будет подписано на сайте.
-ROLE_RANKS = [
+# role_id — ID роли в Discord, rank — подпись, которая выводится на сайте.
+STAFF_ROLE_RANKS = [
     {"role_id": "1490676850056368189", "rank": "Президент"},
     {"role_id": "1524791150219886742", "rank": "Вице-президент"},
     {"role_id": "1490677166164410479", "rank": "Зам. Президента"},
@@ -43,9 +23,19 @@ ROLE_RANKS = [
     {"role_id": "1493633606650695750", "rank": "Депутат"},
     # добавляй сколько нужно строк
 ]
+STAFF_OUTPUT_FILE = "staffUPD"
 
-# Итоговый файл — должен совпадать с тем, что грузит сайт через fetch()
-OUTPUT_FILE = "staffUPD"
+# ---- СПОНСОРЫ ----
+# role_id — ID роли спонсорского уровня в Discord.
+# tier — служебный ключ тира для сайта: 'premium' / 'super' / 'standart'.
+# label — человекочитаемое название (не используется сайтом напрямую,
+#         но полезно для чтения этого файла).
+SUPPORT_ROLE_TIERS = [
+    {"role_id": "1532302002971742288", "tier": "premium", "label": "ИСР - Premium Edition"},
+    {"role_id": "1532302012207861860", "tier": "super", "label": "ИСР - Super Edition"},
+    {"role_id": "1532302015798186114", "tier": "standart", "label": "ИСР - Standart Edition"},
+]
+SUPPORT_OUTPUT_FILE = "supportUPD"
 
 # ============================================================
 
@@ -98,6 +88,34 @@ def display_name(member):
     return user.get("global_name") or user["username"]
 
 
+def collect_by_roles(members, role_entries, extra_field, get_value):
+    """
+    Общая логика: идём по ролям в заданном порядке и собираем участников,
+    у которых есть соответствующая роль. Каждый человек попадает только
+    один раз — по самой старшей из своих ролей в списке.
+
+    role_entries — список словарей с ключом 'role_id' и любым доп. полем
+                   (например 'rank' для стаффа или 'tier' для спонсоров).
+    extra_field  — имя итогового поля в JSON ('rank' или 'tier').
+    get_value    — функция (role_entry) -> значение для extra_field.
+    """
+    result = []
+    seen_user_ids = set()
+    for role_entry in role_entries:
+        role_id = role_entry["role_id"]
+        value = get_value(role_entry)
+        for member in members:
+            user_id = member["user"]["id"]
+            if role_id in member.get("roles", []) and user_id not in seen_user_ids:
+                result.append({
+                    "name": display_name(member),
+                    extra_field: value,
+                    "avatar": avatar_url(member["user"]),
+                })
+                seen_user_ids.add(user_id)
+    return result
+
+
 def main():
     if "ВСТАВЬ_СЮДА" in BOT_TOKEN or "ВСТАВЬ_СЮДА" in GUILD_ID:
         print("Заполни BOT_TOKEN и GUILD_ID в начале файла перед запуском.")
@@ -107,27 +125,21 @@ def main():
     members = fetch_all_members(GUILD_ID)
     print(f"Всего участников: {len(members)}")
 
-    result = []
-    seen_user_ids = set()
+    # ---- Стафф ----
+    staff = collect_by_roles(
+        members, STAFF_ROLE_RANKS, "rank", lambda r: r["rank"]
+    )
+    with open(STAFF_OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(staff, f, ensure_ascii=False, indent=2)
+    print(f"Готово! Записано {len(staff)} человек в {STAFF_OUTPUT_FILE}")
 
-    # Идём по ролям в заданном порядке — так сохраняется порядок вывода на сайте
-    for role_entry in ROLE_RANKS:
-        role_id = role_entry["role_id"]
-        rank_name = role_entry["rank"]
-        for member in members:
-            user_id = member["user"]["id"]
-            if role_id in member.get("roles", []) and user_id not in seen_user_ids:
-                result.append({
-                    "name": display_name(member),
-                    "rank": rank_name,
-                    "avatar": avatar_url(member["user"]),
-                })
-                seen_user_ids.add(user_id)
-
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2)
-
-    print(f"Готово! Записано {len(result)} человек в {OUTPUT_FILE}")
+    # ---- Спонсоры ----
+    support = collect_by_roles(
+        members, SUPPORT_ROLE_TIERS, "tier", lambda r: r["tier"]
+    )
+    with open(SUPPORT_OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(support, f, ensure_ascii=False, indent=2)
+    print(f"Готово! Записано {len(support)} человек в {SUPPORT_OUTPUT_FILE}")
 
 
 if __name__ == "__main__":
