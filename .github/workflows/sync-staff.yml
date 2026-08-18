@@ -34,8 +34,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- staffUPD supportUPD; then
-            git add staffUPD supportUPD
+          if ! git diff --quiet -- json/staffUPD json/supportUPD; then
+            git add json/staffUPD json/supportUPD
             git commit -m "Auto-update staff & sponsors list from Discord"
             git push
           else
