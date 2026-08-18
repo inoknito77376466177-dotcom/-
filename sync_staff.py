@@ -8,7 +8,7 @@ import requests
 
 # Для локального теста можно вписать сюда прямо значения.
 # Если переменные окружения заданы (как в GitHub Actions) — они в приоритете.
-BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN", "token")
+BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN", "tokem")
 GUILD_ID = os.environ.get("DISCORD_GUILD_ID", "id")
 
 # ---- СТАФФ ----
@@ -23,7 +23,7 @@ STAFF_ROLE_RANKS = [
     {"role_id": "1493633606650695750", "rank": "Депутат"},
     # добавляй сколько нужно строк
 ]
-STAFF_OUTPUT_FILE = "staffUPD"
+STAFF_OUTPUT_FILE = "json/staffUPD"
 
 # ---- СПОНСОРЫ ----
 # role_id — ID роли спонсорского уровня в Discord.
@@ -35,7 +35,7 @@ SUPPORT_ROLE_TIERS = [
     {"role_id": "1532302012207861860", "tier": "super", "label": "ИСР - Super Edition"},
     {"role_id": "1532302015798186114", "tier": "standart", "label": "ИСР - Standart Edition"},
 ]
-SUPPORT_OUTPUT_FILE = "supportUPD"
+SUPPORT_OUTPUT_FILE = "json/supportUPD"
 
 # ============================================================
 
