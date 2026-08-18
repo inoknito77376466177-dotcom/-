@@ -1,4 +1,4 @@
-name: Sync staff list from Discord
+name: Sync staff & sponsors from Discord
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch: {}   # позволяет запускать вручную кнопкой "Run workflow"
 
 permissions:
-  contents: write   # нужно, чтобы Action мог закоммитить обновлённый файл
+  contents: write   # нужно, чтобы Action мог закоммитить обновлённые файлы
 
 jobs:
   sync-staff:
@@ -34,10 +34,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- staffUPD; then
-            git add staffUPD
-            git commit -m "Auto-update staff list from Discord"
+          if ! git diff --quiet -- staffUPD supportUPD; then
+            git add staffUPD supportUPD
+            git commit -m "Auto-update staff & sponsors list from Discord"
             git push
           else
-            echo "Список стаффа не изменился, коммит не нужен."
+            echo "Списки не изменились, коммит не нужен."
           fi
