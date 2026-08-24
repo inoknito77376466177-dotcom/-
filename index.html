@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title data-i18n="page.title">ИСР — Индустриальный Сервер Работяг</title>
+<title>ИСР — Индустриальный Сервер Работяг</title>
 <link id="favicon" rel="icon" type="image/png">
 <script>
   fetch('icon.txt').then(r=>r.text()).then(b=>{document.getElementById('favicon').href='data:image/png;base64,'+b.trim()});
@@ -297,16 +297,23 @@ nav.tabs button.active::after { transform:scaleX(1); }
   background: var(--steel);
   border-top: 3px solid var(--yellow);
   border-radius: 16px 16px 0 0;
-  padding: 12px 0 max(20px, env(safe-area-inset-bottom));
-  z-index: 499;
+  padding: 12px 0 max(72px, calc(52px + env(safe-area-inset-bottom)));
+  z-index: 501;
   transform: translateY(100%);
   transition: transform .3s cubic-bezier(.4,0,.2,1);
+  max-height: 85vh;
+  max-height: 85dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
+.mobile-menu-panel::-webkit-scrollbar { width: 6px; }
+.mobile-menu-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 3px; }
 .mobile-menu-panel.open { transform: translateY(0); }
 .mob-menu-handle {
   width: 40px; height: 4px; background: var(--steel-text-dim);
   border-radius: 2px; margin: 0 auto 16px;
   opacity: .4;
+  position: sticky; top: 0;
 }
 .mob-menu-item {
   display: flex; align-items: center; gap: 14px;
@@ -348,6 +355,7 @@ main { max-width:1080px;margin:0 auto;padding:0 24px 100px; }
 .hero {
   position:relative;padding:60px 0 40px;
   border-bottom:1px solid var(--line);
+  overflow:hidden;
 }
 .hero::before {
   content:"";position:absolute;top:-9px;right:-24px;
@@ -430,6 +438,18 @@ main { max-width:1080px;margin:0 auto;padding:0 24px 100px; }
 .floorbar div:last-child { border-right:none; }
 .floorbar .num { font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;display:flex;align-items:center;gap:8px; }
 .floorbar .lbl { font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin-top:4px; }
+
+/* ===== VIDEO BLOCK ===== */
+.video-block { margin-top:44px; }
+.video-block .eyebrow { margin-bottom:14px; }
+.video-frame {
+  position:relative;width:100%;padding-top:56.25%;
+  border:1px solid var(--line-strong);border-radius:var(--radius);overflow:hidden;
+  background:var(--steel);
+}
+.video-frame iframe {
+  position:absolute;inset:0;width:100%;height:100%;border:0;
+}
 
 /* ===== ABOUT ===== */
 .about { padding:48px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1.1fr 1fr;gap:44px; }
@@ -555,6 +575,37 @@ details.codex[open] summary .chevron { transform:rotate(45deg); }
 
 @media (max-width:640px){
   .support-grid { grid-template-columns:1fr 1fr; }
+}
+
+/* ===== GALLERY ===== */
+.gallery-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:10px; }
+.gallery-item {
+  position:relative;border:1px solid var(--line-strong);border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;background:var(--paper-2);aspect-ratio:4/3;
+  transition:transform .18s,box-shadow .18s;
+}
+.gallery-item:hover { transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.15); }
+.gallery-item img { width:100%;height:100%;object-fit:cover;display:block; }
+.gallery-item::after {
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.35),transparent 40%);
+  opacity:0;transition:opacity .18s;
+}
+.gallery-item:hover::after { opacity:1; }
+
+.lightbox-overlay {
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(10,9,7,.9);align-items:center;justify-content:center;padding:24px;
+}
+.lightbox-overlay.open { display:flex; }
+.lightbox-img { max-width:92vw;max-height:88vh;border:2px solid var(--yellow);border-radius:var(--radius);object-fit:contain; }
+.lightbox-close { position:absolute;top:18px;right:22px;background:var(--ink);color:var(--yellow);border:2px solid var(--yellow);width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+.lightbox-nav { position:absolute;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--yellow);border:2px solid var(--yellow);width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+.lightbox-prev { left:18px; }
+.lightbox-next { right:18px; }
+@media (max-width:640px){
+  .lightbox-nav { width:36px;height:36px;font-size:16px; }
+  .lightbox-close { width:34px;height:34px;top:10px;right:10px; }
 }
 
 /* ===== CHANNELS ===== */
@@ -740,6 +791,34 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
 .gear-btn { background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:var(--steel-text-dim);cursor:pointer;padding:9px;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:color .15s,transform .3s,background .18s,border-color .18s; }
 .gear-btn:hover { color:var(--yellow);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);transform:rotate(35deg); }
 
+.icon-link-btn { background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:var(--steel-text-dim);cursor:pointer;padding:9px;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:color .15s,background .18s,border-color .18s;flex-shrink:0;text-decoration:none; }
+.icon-link-btn:hover { color:var(--yellow);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12); }
+.icon-link-btn.icon-youtube { background:#FF0000;border-color:#FF0000;color:#fff; }
+.icon-link-btn.icon-youtube:hover { background:#D90000;border-color:#D90000;color:#fff; }
+
+/* ===== MORE DROPDOWN (desktop) ===== */
+.more-dropdown { position:relative;flex-shrink:0; }
+.more-dropdown-panel {
+  position:absolute;top:calc(100% + 10px);right:0;
+  background:var(--steel);border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:6px;min-width:170px;
+  display:flex;flex-direction:column;gap:2px;
+  opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity .18s,transform .18s,visibility .18s;
+  box-shadow:0 12px 32px rgba(0,0,0,.35);z-index:600;
+}
+.more-dropdown-panel.open { opacity:1;visibility:visible;transform:translateY(0); }
+.more-dropdown-panel a {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:8px;text-decoration:none;
+  color:var(--steel-text-dim);font-family:'Oswald',sans-serif;
+  font-size:13px;text-transform:uppercase;letter-spacing:.03em;
+  transition:background .15s,color .15s;
+}
+.more-dropdown-panel a:hover { background:rgba(255,255,255,.06);color:var(--steel-text); }
+.more-dropdown-panel .ic { width:18px;height:18px; }
+#moreDropdownBtn[aria-expanded="true"] { color:var(--yellow);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12); }
+
 /* Gesture canvas */
 #gestureCanvas { position:fixed;inset:0;z-index:9998;pointer-events:none;display:none; }
 /* Spark */
@@ -775,6 +854,8 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   .btn-join-top { display:none; }
   header .btn-boosty { display:none; }
   .gear-btn { display:none; }
+  header .icon-link-btn { display:none; }
+  .more-dropdown { display:none; }
   .burger { display:flex; }
   .mobile-bottom-nav { display:flex; }
   header.top { padding:0 16px; height:56px; }
@@ -854,7 +935,7 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <symbol id="ic-shuffle" viewBox="0 0 24 24"><path d="M18 4l4 4-4 4"/><path d="M3 8h13a4 4 0 0 1 4 4"/><path d="M18 20l4-4-4-4"/><path d="M3 16h13a4 4 0 0 0 4-4"/></symbol>
   <symbol id="ic-save" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v5h8V3"/><path d="M7 13h10v8H7z"/></symbol>
   <symbol id="ic-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/><path d="M10 11v5M14 11v5"/></symbol>
-  <symbol id="ic-heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.9-10-9.5C.5 8 2 4.5 5.5 4c2-.3 3.8.7 4.9 2.3C11.5 4.7 13.3 3.7 15.3 4c3.5.5 5 4 3.5 7.5C21.5 16.1 12 21 12 21z"/></symbol>
+  <symbol id="ic-youtube" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></symbol>
 </svg>
 
 <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -865,20 +946,28 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
     <div class="plate"><img id="logoImg" alt="Логотип ИСР"></div>
     <div class="brand-text">
       <div class="name display-font">ИСР</div>
-      <div class="sub" data-i18n="header.subtitle">Индустриальный Сервер Работяг</div>
+      <div class="sub">Индустриальный Сервер Работяг</div>
     </div>
   </div>
   <div class="top-right">
     <nav class="tabs" id="tabs">
-      <button data-page="home" class="active" data-i18n="nav.home">Главная</button>
-      <button data-page="history" data-i18n="nav.history">История</button>
-      <button data-page="laws" data-i18n="nav.laws">Законы</button>
-      <button data-page="staff" data-i18n="nav.staff">Стафф</button>
-      <button data-page="support" data-i18n="nav.support">Спонсоры</button>
-      <button data-page="updates" data-i18n="nav.updates">Обновления</button>
+      <button data-page="home" class="active">Главная</button>
+      <button data-page="history">История сервера</button>
+      <button data-page="laws">Законы</button>
+      <button data-page="staff">Стафф</button>
+      <button data-page="support">Спонсоры</button>
+      <button data-page="gallery">Галерея</button>
+      <button data-page="updates">Обновления</button>
+      <button data-page="announcements">Объявления</button>
     </nav>
-    <a class="btn-boosty" href="https://boosty.to/grechkagb" target="_blank" rel="noopener"><svg class="ic ic-sm"><use href="#ic-heart"/></svg> Boosty</a>
-    <a class="btn-join-top" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener" data-i18n="nav.join">Вступить в ИСР</a>
+    <div class="more-dropdown" id="moreDropdown">
+      <button class="icon-link-btn" id="moreDropdownBtn" aria-label="Ещё" aria-haspopup="true" aria-expanded="false"><svg class="ic ic-lg"><use href="#ic-more"/></svg></button>
+      <div class="more-dropdown-panel" id="moreDropdownPanel">
+        <a href="https://www.youtube.com/@industrialserverrabotyag" target="_blank" rel="noopener"><svg class="ic"><use href="#ic-youtube"/></svg> YouTube</a>
+        <a href="https://boosty.to/grechkagb" target="_blank" rel="noopener"><img src="img/icons/icon_boosty.png" alt="" class="ic" style="border-radius:2px;"> Boosty</a>
+      </div>
+    </div>
+    <a class="btn-join-top" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener">Вступить в ИСР</a>
     <button class="gear-btn" id="gearBtn" aria-label="Настройки"><svg class="ic ic-lg"><use href="#ic-gear"/></svg></button>
     <button class="burger" id="burgerBtn" aria-label="Меню">
       <span></span><span></span><span></span>
@@ -890,16 +979,19 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
 <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
 <div class="mobile-menu-panel" id="mobileMenuPanel">
   <div class="mob-menu-handle"></div>
-  <button class="mob-menu-item" data-page="home"><svg><use href="#ic-home"/></svg><span data-i18n="nav.home">Главная</span></button>
-  <button class="mob-menu-item" data-page="history"><svg><use href="#ic-archive"/></svg><span data-i18n="nav.history">История создания</span></button>
-  <button class="mob-menu-item" data-page="laws"><svg><use href="#ic-scale"/></svg><span data-i18n="nav.laws">Законы</span></button>
-  <button class="mob-menu-item" data-page="staff"><svg><use href="#ic-crown"/></svg><span data-i18n="nav.staff">Стафф</span></button>
-  <button class="mob-menu-item" data-page="support"><svg><use href="#ic-badge"/></svg><span data-i18n="nav.support">Спонсоры</span></button>
-  <button class="mob-menu-item" data-page="updates"><svg><use href="#ic-megaphone"/></svg><span data-i18n="nav.updates">Обновления</span></button>
-  <button class="mob-menu-item" id="mobileSettingsBtn" style="color:var(--yellow);"><svg><use href="#ic-gear"/></svg><span data-i18n="settings.title">Настройки</span></button>
+  <button class="mob-menu-item" data-page="home"><svg><use href="#ic-home"/></svg><span>Главная</span></button>
+  <button class="mob-menu-item" data-page="history"><svg><use href="#ic-archive"/></svg><span>История создания</span></button>
+  <button class="mob-menu-item" data-page="laws"><svg><use href="#ic-scale"/></svg><span>Законы</span></button>
+  <button class="mob-menu-item" data-page="staff"><svg><use href="#ic-crown"/></svg><span>Стафф</span></button>
+  <button class="mob-menu-item" data-page="support"><svg><use href="#ic-badge"/></svg><span>Спонсоры</span></button>
+  <button class="mob-menu-item" data-page="gallery"><svg><use href="#ic-brush"/></svg><span>Галерея</span></button>
+  <button class="mob-menu-item" data-page="updates"><svg><use href="#ic-megaphone"/></svg><span>Обновления</span></button>
+  <button class="mob-menu-item" data-page="announcements"><svg><use href="#ic-inbox"/></svg><span>Объявления</span></button>
+  <button class="mob-menu-item" id="mobileSettingsBtn" style="color:var(--yellow);"><svg><use href="#ic-gear"/></svg><span>Настройки</span></button>
   <div style="padding:12px 24px;display:flex;flex-direction:column;gap:10px;">
-    <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener" style="display:block;text-align:center;" data-i18n="nav.join">Вступить в ИСР</a>
-    <a class="btn-boosty" href="https://boosty.to/grechkagb" target="_blank" rel="noopener" style="display:flex;justify-content:center;"><svg class="ic ic-sm"><use href="#ic-heart"/></svg> Boosty</a>
+    <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener" style="display:block;text-align:center;">Вступить в ИСР</a>
+    <a class="btn-boosty" href="https://boosty.to/grechkagb" target="_blank" rel="noopener" style="display:flex;justify-content:center;"><img src="img/icons/icon_boosty.png" alt="" class="ic ic-sm" style="vertical-align:-3px;border-radius:2px;"> Boosty</a>
+    <a class="btn-outline" href="https://www.youtube.com/@industrialserverrabotyag" target="_blank" rel="noopener" style="display:flex;justify-content:center;align-items:center;gap:8px;text-decoration:none;"><svg class="ic ic-sm"><use href="#ic-youtube"/></svg> YouTube</a>
   </div>
 </div>
 
@@ -907,23 +999,23 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
 <nav class="mobile-bottom-nav" id="mobileBottomNav">
   <button class="mob-nav-btn active" data-page="home">
     <svg viewBox="0 0 24 24"><use href="#ic-home"/></svg>
-    <span class="mob-label" data-i18n="nav.home">Главная</span>
+    <span class="mob-label">Главная</span>
   </button>
   <button class="mob-nav-btn" data-page="history">
     <svg viewBox="0 0 24 24"><use href="#ic-archive"/></svg>
-    <span class="mob-label" data-i18n="nav.history">История</span>
+    <span class="mob-label">История сервера</span>
   </button>
   <button class="mob-nav-btn" data-page="laws">
     <svg viewBox="0 0 24 24"><use href="#ic-scale"/></svg>
-    <span class="mob-label" data-i18n="nav.laws">Законы</span>
+    <span class="mob-label">Законы</span>
   </button>
   <button class="mob-nav-btn" data-page="staff">
     <svg viewBox="0 0 24 24"><use href="#ic-crown"/></svg>
-    <span class="mob-label" data-i18n="nav.staff">Стафф</span>
+    <span class="mob-label">Стафф</span>
   </button>
   <button class="mob-nav-btn" id="moreNavBtn">
     <svg viewBox="0 0 24 24"><use href="#ic-more"/></svg>
-    <span class="mob-label" data-i18n="nav.more">Ещё</span>
+    <span class="mob-label">Ещё</span>
   </button>
 </nav>
 
@@ -931,35 +1023,41 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <!-- HOME -->
   <section class="page active" id="home">
     <div class="hero">
-      <div class="eyebrow"><svg class="ic"><use href="#ic-tools"/></svg> <span data-i18n="hero.eyebrow">ЦЕХ ОТКРЫТ · СМЕНА ИДЁТ</span></div>
-      <h1 class="display-font" data-i18n="hero.title">Индустриальный<br>Сервер<br><span>Работяг.</span></h1>
-      <p class="lead" data-i18n="hero.lead">ИСР — это виртуальное государство, созданное на платформе Discord. На сервере действуют свои законы, ранги и многое другое. Круглосуточная модерация судит нарушения по всей строгости закона.</p>
+      <div class="eyebrow"><svg class="ic"><use href="#ic-tools"/></svg> <span>ЦЕХ ОТКРЫТ · СМЕНА ИДЁТ</span></div>
+      <h1 class="display-font">Индустриальный<br>Сервер<br><span>Работяг.</span></h1>
+      <p class="lead">ИСР — это виртуальное государство, созданное на платформе Discord. На сервере действуют свои законы, ранги и многое другое. Круглосуточная модерация судит нарушения по всей строгости закона.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener" data-i18n="nav.join">Вступить в ИСР</a>
-        <button class="btn btn-ghost" onclick="showPage('laws')" data-i18n="hero.readLaws">Читать законы</button>
+        <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener">Вступить в ИСР</a>
+        <button class="btn btn-ghost" onclick="showPage('laws')">Читать законы</button>
       </div>
       <div class="discord-live" id="discordLive">
         <span class="live-dot" id="liveDot"></span>
-        <span id="discordLiveText" data-i18n="discord.loading">подключение к Discord...</span>
+        <span id="discordLiveText">подключение к Discord...</span>
       </div>
       <div class="floorbar corner-marks">
-        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-document"/></svg> <span class="count-up" data-target="4" data-pad="2">00</span></div><div class="lbl" data-i18n="floorbar.laws">свода законов</div></div>
-        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-calendar"/></svg> <span id="daysCount" class="count-up" data-target="0">0</span></div><div class="lbl" data-i18n="floorbar.days">дней с основания</div></div>
-        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-shield"/></svg> 24/7</div><div class="lbl" data-i18n="floorbar.mod">модерация без выходных</div></div>
-        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-flag"/></svg> <span class="count-up" data-target="1">0</span></div><div class="lbl" data-i18n="floorbar.party">правящая партия</div></div>
+        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-document"/></svg> <span class="count-up" data-target="4" data-pad="2">00</span></div><div class="lbl">свода законов</div></div>
+        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-calendar"/></svg> <span id="daysCount" class="count-up" data-target="0">0</span></div><div class="lbl">дней с основания</div></div>
+        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-shield"/></svg> 24/7</div><div class="lbl">модерация без выходных</div></div>
+        <div><div class="num"><svg class="ic ic-lg"><use href="#ic-flag"/></svg> <span class="count-up" data-target="1">0</span></div><div class="lbl">союз (-а)</div></div>
+      </div>
+      <div class="video-block reveal">
+        <div class="eyebrow"><svg class="ic"><use href="#ic-youtube"/></svg> <span>ВИДЕО ИСР</span></div>
+        <div class="video-frame">
+          <iframe src="https://www.youtube.com/embed/ta-_B-RJ0sc" title="ИСР" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+        </div>
       </div>
     </div>
     <div class="about">
       <div class="reveal">
-        <h2 class="display-font" data-i18n="about.title">Государство в Discord</h2>
-        <p data-i18n="about.p1">ИСР — не просто сервер, а виртуальное государство со своей системой власти: президент, партии, госдума и полноценный свод законов.</p>
-        <p data-i18n="about.p2">Каждый участник обязан ознакомиться с законами при вступлении. За порядком следит стафф и круглосуточная модерация.</p>
+        <h2 class="display-font">Государство в Discord</h2>
+        <p>ИСР — не просто сервер, а виртуальное государство со своей системой власти: президент, партии, госдума и полноценный свод законов.</p>
+        <p>Каждый участник обязан ознакомиться с законами при вступлении. За порядком следит стафф и круглосуточная модерация.</p>
       </div>
       <ul class="checklist reveal">
-        <li><b>01</b> <span data-i18n="about.li1">Полноценная система законов: УС, УК, АК, ДК</span></li>
-        <li><b>02</b> <span data-i18n="about.li2">Своя политическая система с партиями и выборами</span></li>
-        <li><b>03</b> <span data-i18n="about.li3">Ранги и роли, за которые можно побороться</span></li>
-        <li><b>04</b> <span data-i18n="about.li4">Каналы под любые интересы — от чата до форумов</span></li>
+        <li><b>01</b> <span>Полноценная система законов: УС, УК, АК, ДК ИСР</span></li>
+        <li><b>02</b> <span>Своя политическая система с партиями и выборами</span></li>
+        <li><b>03</b> <span>Ранги и роли, за которые можно побороться</span></li>
+        <li><b>04</b> <span>Каналы под любые интересы — от чата до форумов</span></li>
       </ul>
     </div>
   </section>
@@ -968,9 +1066,9 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <section class="page" id="history">
     <svg class="page-watermark"><use href="#ic-archive"/></svg>
     <div class="section-head reveal">
-      <div class="eyebrow"><svg class="ic"><use href="#ic-archive"/></svg> <span data-i18n="history.eyebrow">АРХИВ ГОСУДАРСТВА</span></div>
-      <h2 class="display-font" data-i18n="history.title">История создания</h2>
-      <p data-i18n="history.subtitle">От первого сервера без единого закона до государства с партиями, выборами и полным сводом кодексов.</p>
+      <div class="eyebrow"><svg class="ic"><use href="#ic-archive"/></svg> <span>АРХИВ ГОСУДАРСТВА</span></div>
+      <h2 class="display-font">История создания</h2>
+      <p>От первого сервера без единого закона до государства с партиями, выборами и полным сводом кодексов.</p>
     </div>
     <div class="timeline">
       <div class="tl-item reveal"><div class="tl-date">11.03.2026</div><div><h3>Основание ИСГ</h3><p>Гречка создаёт сервер — на тот момент он назывался ИСГ. Ни законов, ни ролей ещё не существовало.</p></div></div>
@@ -994,17 +1092,17 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <section class="page" id="laws">
     <svg class="page-watermark"><use href="#ic-scale"/></svg>
     <div class="section-head reveal">
-      <div class="eyebrow"><svg class="ic"><use href="#ic-scale"/></svg> <span data-i18n="laws.eyebrow">ЗАКОНОДАТЕЛЬСТВО ИСР</span></div>
-      <h2 class="display-font" data-i18n="laws.title">Законы</h2>
-      <p data-i18n="laws.subtitle">Полный свод законов государства: устав, уголовный, административный и дисциплинарный кодексы.</p>
+      <div class="eyebrow"><svg class="ic"><use href="#ic-scale"/></svg> <span>ЗАКОНОДАТЕЛЬСТВО ИСР</span></div>
+      <h2 class="display-font">Законы</h2>
+      <p>Полный свод законов государства: устав, уголовный, административный и дисциплинарный кодексы.</p>
     </div>
     <div class="law-search-wrap reveal">
       <svg class="ic"><use href="#ic-search"/></svg>
-      <input type="text" id="lawSearch" class="law-search-input" data-i18n-placeholder="laws.searchPlaceholder" placeholder="Найти пункт закона, например «спам» или «УК ИСР 0.7»">
+      <input type="text" id="lawSearch" class="law-search-input" placeholder="Найти пункт закона, например «спам» или «УК ИСР 0.7»">
     </div>
     <div class="law-search-status" id="lawSearchStatus"></div>
     <div class="codex-desig reveal corner-marks">
-      <div class="t"><svg class="ic"><use href="#ic-document"/></svg> <span data-i18n="laws.designations">Обозначения</span></div>
+      <div class="t"><svg class="ic"><use href="#ic-document"/></svg> <span>Обозначения</span></div>
       <ul>
         <li><b>ИСР</b> — Индустриальный Сервер Работяг</li>
         <li><b>УС</b> — Устав Сервера</li>
@@ -1100,17 +1198,17 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
       </div>
     </details>
     <details class="codex reveal">
-      <summary><span class="cx-name">Дисциплинарный кодекс</span><span class="cx-abbr"><svg class="ic"><use href="#ic-shield"/></svg>ДК <span class="chevron">+</span></span></summary>
+      <summary><span class="cx-name">Дисциплинарный кодекс</span><span class="cx-abbr"><svg class="ic"><use href="#ic-shield"/></svg>ДК ИСР <span class="chevron">+</span></span></summary>
       <div class="cx-body">
         <div class="cx-group">
           <div class="cx-group-title"><svg class="ic"><use href="#ic-warning"/></svg> 8. Общие законы</div>
-          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК 8.1</div><div class="txt">Запрещено превышение полномочий</div></div>
-          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК 8.2</div><div class="txt">Запрещено использование должности в личных целях</div></div>
-          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК 8.3</div><div class="txt">Запрещена выдача ролей без оснований</div></div>
-          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК 8.4</div><div class="txt">Запрещены наказания без доказательств</div></div>
-          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК 8.5</div><div class="txt">Запрещено ограничивать участников без причины</div></div>
-          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК 8.6</div><div class="txt">Запрещена выдача роли, не предназначенной для участников (@БОТЫ)</div></div>
-          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК 8.7</div><div class="txt">Запрещено покрывать нарушителя</div></div>
+          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК ИСР 8.1</div><div class="txt">Запрещено превышение полномочий</div></div>
+          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК ИСР 8.2</div><div class="txt">Запрещено использование должности в личных целях</div></div>
+          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК ИСР 8.3</div><div class="txt">Запрещена выдача ролей без оснований</div></div>
+          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК ИСР 8.4</div><div class="txt">Запрещены наказания без доказательств</div></div>
+          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК ИСР 8.5</div><div class="txt">Запрещено ограничивать участников без причины</div></div>
+          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК ИСР 8.6</div><div class="txt">Запрещена выдача роли, не предназначенной для участников (@БОТЫ)</div></div>
+          <div class="law-row"><div class="code"><svg class="ic ic-sm"><use href="#ic-ban"/></svg> ДК ИСР 8.7</div><div class="txt">Запрещено покрывать нарушителя</div></div>
         </div>
       </div>
     </details>
@@ -1120,15 +1218,15 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <section class="page" id="staff">
     <svg class="page-watermark"><use href="#ic-crown"/></svg>
     <div class="section-head reveal">
-      <div class="eyebrow"><svg class="ic"><use href="#ic-crown"/></svg> <span data-i18n="staff.eyebrow">РУКОВОДСТВО ГОСУДАРСТВА</span></div>
-      <h2 class="display-font" data-i18n="staff.title">Стафф</h2>
-      <p data-i18n="staff.subtitle">Люди, которые управляют ИСР и отвечают за порядок на сервере.</p>
+      <div class="eyebrow"><svg class="ic"><use href="#ic-crown"/></svg> <span>РУКОВОДСТВО ГОСУДАРСТВА</span></div>
+      <h2 class="display-font">Стафф</h2>
+      <p>Люди, которые управляют ИСР и отвечают за порядок на сервере.</p>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-      <button class="btn-outline" id="refreshStaff" style="font-size:11px;padding:7px 12px;" data-i18n="staff.refresh">↻ Обновить</button>
+      <button class="btn-outline" id="refreshStaff" style="font-size:11px;padding:7px 12px;">↻ Обновить</button>
     </div>
     <div class="staff-grid reveal stagger" id="staffList">
-      <div class="update-state" style="grid-column:1/-1;" data-i18n="loading.staff">Загрузка стаффа...</div>
+      <div class="update-state" style="grid-column:1/-1;">Загрузка стаффа...</div>
     </div>
   </section>
 
@@ -1136,30 +1234,58 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <section class="page" id="support">
     <svg class="page-watermark"><use href="#ic-badge"/></svg>
     <div class="section-head reveal">
-      <div class="eyebrow"><svg class="ic"><use href="#ic-badge"/></svg> <span data-i18n="support.eyebrow">ЗАЛ ПОЧЁТА</span></div>
-      <h2 class="display-font" data-i18n="support.title">Спонсоры</h2>
-      <p data-i18n="support.subtitle">Люди, которые поддерживают развитие ИСР рублём и хорошим настроением.</p>
+      <div class="eyebrow"><svg class="ic"><use href="#ic-badge"/></svg> <span>ЗАЛ ПОЧЁТА</span></div>
+      <h2 class="display-font">Спонсоры</h2>
+      <p>Люди, которые поддерживают развитие ИСР рублём и хорошим настроением.</p>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-      <button class="btn-outline" id="refreshSupport" style="font-size:11px;padding:7px 12px;" data-i18n="support.refresh">↻ Обновить</button>
+      <button class="btn-outline" id="refreshSupport" style="font-size:11px;padding:7px 12px;">↻ Обновить</button>
     </div>
     <div class="support-tiers" id="supportList">
-      <div class="update-state" data-i18n="loading.support">Загрузка спонсоров...</div>
+      <div class="update-state">Загрузка спонсоров...</div>
     </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="page" id="gallery">
+    <svg class="page-watermark"><use href="#ic-brush"/></svg>
+    <div class="section-head reveal">
+      <div class="eyebrow"><svg class="ic"><use href="#ic-brush"/></svg> <span>ФОТОАРХИВ</span></div>
+      <h2 class="display-font">Галерея</h2>
+      <p>Моменты, скриншоты и мемы с сервера ИСР.</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+      <button class="btn-outline" id="refreshGallery" style="font-size:11px;padding:7px 12px;">↻ Обновить</button>
+    </div>
+    <div class="gallery-grid reveal stagger" id="galleryList"></div>
   </section>
 
   <!-- UPDATES -->
   <section class="page" id="updates">
     <svg class="page-watermark"><use href="#ic-megaphone"/></svg>
     <div class="section-head reveal">
-      <div class="eyebrow"><svg class="ic"><use href="#ic-megaphone"/></svg> <span data-i18n="updates.eyebrow">ДОСКА ОБЪЯВЛЕНИЙ</span></div>
-      <h2 class="display-font" data-i18n="updates.title">Обновления</h2>
-      <p data-i18n="updates.subtitle">Новости и изменения на сервере.</p>
+      <div class="eyebrow"><svg class="ic"><use href="#ic-megaphone"/></svg> <span>ДОСКА ОБЪЯВЛЕНИЙ</span></div>
+      <h2 class="display-font">Обновления</h2>
+      <p>Новости и изменения на сервере.</p>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-      <button class="btn-outline" id="refreshUpdates" style="font-size:11px;padding:7px 12px;" data-i18n="updates.refresh">↻ Обновить</button>
+      <button class="btn-outline" id="refreshUpdates" style="font-size:11px;padding:7px 12px;">↻ Обновить</button>
     </div>
-    <div id="updatesList"><div class="update-state" data-i18n="loading.updates">Загрузка обновлений...</div></div>
+    <div id="updatesList"><div class="update-state">Загрузка обновлений...</div></div>
+  </section>
+
+  <!-- ANNOUNCEMENTS -->
+  <section class="page" id="announcements">
+    <svg class="page-watermark"><use href="#ic-inbox"/></svg>
+    <div class="section-head reveal">
+      <div class="eyebrow"><svg class="ic"><use href="#ic-inbox"/></svg> <span>ИНФОРМАЦИОННЫЙ СТЕНД</span></div>
+      <h2 class="display-font">Объявления</h2>
+      <p>Всё остальное: события, наборы, важные предупреждения и прочее.</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+      <button class="btn-outline" id="refreshAnnounce" style="font-size:11px;padding:7px 12px;">↻ Обновить</button>
+    </div>
+    <div id="announceList"><div class="update-state">Загрузка объявлений...</div></div>
   </section>
 </main>
 
@@ -1173,25 +1299,28 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
       <div class="footer-logo"><img id="footerLogo" alt="Логотип ИСР"></div>
       <div>
         <div class="f-brand">ИСР — ИНДУСТРИАЛЬНЫЙ СЕРВЕР РАБОТЯГ</div>
-        <div class="f-note" data-i18n="footer.note">Законы действительны на всей территории государства</div>
+        <div class="f-note">Законы действительны на всей территории государства</div>
       </div>
     </div>
     <div class="footer-links">
-      <button onclick="showPage('home')" data-i18n="nav.home">Главная</button>
-      <button onclick="showPage('history')" data-i18n="nav.history">История</button>
-      <button onclick="showPage('laws')" data-i18n="nav.laws">Законы</button>
-      <button onclick="showPage('staff')" data-i18n="nav.staff">Стафф</button>
-      <button onclick="showPage('support')" data-i18n="nav.support">Спонсоры</button>
-      <button onclick="showPage('updates')" data-i18n="nav.updates">Обновления</button>
+      <button onclick="showPage('home')">Главная</button>
+      <button onclick="showPage('history')">История сервера</button>
+      <button onclick="showPage('laws')">Законы</button>
+      <button onclick="showPage('staff')">Стафф</button>
+      <button onclick="showPage('support')">Спонсоры</button>
+      <button onclick="showPage('gallery')">Галерея</button>
+      <button onclick="showPage('updates')">Обновления</button>
+      <button onclick="showPage('announcements')">Объявления</button>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <a class="btn-boosty" href="https://boosty.to/grechkagb" target="_blank" rel="noopener"><svg class="ic ic-sm"><use href="#ic-heart"/></svg> Boosty</a>
-      <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener" data-i18n="nav.join">Вступить в ИСР</a>
+      <a class="icon-link-btn icon-youtube" href="https://www.youtube.com/@industrialserverrabotyag" target="_blank" rel="noopener" aria-label="YouTube ИСР"><svg class="ic ic-lg"><use href="#ic-youtube"/></svg></a>
+      <a class="btn-boosty" href="https://boosty.to/grechkagb" target="_blank" rel="noopener"><img src="img/icons/icon_boosty.png" alt="" class="ic ic-sm" style="vertical-align:-3px;border-radius:2px;"> Boosty</a>
+      <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener">Вступить в ИСР</a>
     </div>
   </div>
   <div class="footer-bottom">
     <span>ИСР © 2026</span>
-    <span id="shiftClock" data-i18n="clock.shift">СМЕНА · --:--:--</span>
+    <span id="shiftClock">СМЕНА · --:--:--</span>
     <span>ОСНОВАНО 11.03.2026</span>
   </div>
 </footer>
@@ -1201,13 +1330,13 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <div class="console-panel">
     <div class="console-scanlines"></div>
     <div class="console-header">
-      <span class="console-title"><svg class="ic ic-sm"><use href="#ic-tools"/></svg> <span data-i18n="console.title">ПУЛЬТ УПРАВЛЕНИЯ ИСР</span></span>
+      <span class="console-title"><svg class="ic ic-sm"><use href="#ic-tools"/></svg> <span>ПУЛЬТ УПРАВЛЕНИЯ ИСР</span></span>
       <button class="console-close" onclick="closeConsole()">×</button>
     </div>
     <div class="console-output" id="consoleOutput"></div>
     <div class="console-input-row">
       <span class="console-prompt">work@isr:~$</span>
-      <input type="text" id="consoleInput" class="console-input" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-placeholder="console.placeholder" placeholder="help">
+      <input type="text" id="consoleInput" class="console-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="help">
     </div>
   </div>
 </div>
@@ -1216,40 +1345,34 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
 <div class="settings-overlay" id="settingsOverlay">
   <div class="settings-panel">
     <div class="settings-header">
-      <span class="settings-title" data-i18n="settings.title">⚙ Настройки</span>
+      <span class="settings-title">⚙ Настройки</span>
       <button class="settings-close" onclick="closeSettings()">×</button>
     </div>
     <div class="settings-tabs">
-      <button class="stab active" data-stab="themes" data-i18n="settings.tab.themes">🎨 Темы</button>
-      <button class="stab" data-stab="custom" data-i18n="settings.tab.custom">✏️ Редактор</button>
-      <button class="stab" data-stab="saved" data-i18n="settings.tab.saved">💾 Мои темы</button>
-      <button class="stab" data-stab="layout" data-i18n="settings.tab.layout">📐 Интерфейс</button>
+      <button class="stab active" data-stab="themes">🎨 Темы</button>
+      <button class="stab" data-stab="custom">✏️ Редактор</button>
+      <button class="stab" data-stab="saved">💾 Мои темы</button>
+      <button class="stab" data-stab="layout">📐 Интерфейс</button>
     </div>
     <div class="settings-body">
 
       <!-- THEMES TAB -->
       <div class="stab-panel active" id="stab-themes">
-        <div class="sg-label" data-i18n="settings.builtin">Встроенные темы</div>
+        <div class="sg-label">Встроенные темы</div>
         <div class="theme-presets" id="themePresets">
           <!-- filled by JS -->
         </div>
-        <div class="sg-label" style="margin-top:20px;" data-i18n="settings.baseMode">Базовый режим</div>
+        <div class="sg-label" style="margin-top:20px;">Базовый режим</div>
         <div class="seg-group" id="baseModeGroup">
-          <button class="seg-btn" data-value="light" data-i18n="settings.light">☀ Светлая</button>
-          <button class="seg-btn" data-value="dark" data-i18n="settings.dark">🌙 Тёмная</button>
-          <button class="seg-btn" data-value="system" data-i18n="settings.system">⚙ Системная</button>
-        </div>
-        <div class="sg-label" style="margin-top:20px;" data-i18n="settings.language">Язык</div>
-        <div class="seg-group" id="langGroup">
-          <button class="seg-btn" data-value="ru" data-i18n="settings.lang.ru">Русский</button>
-          <button class="seg-btn" data-value="en" data-i18n="settings.lang.en">English</button>
-          <button class="seg-btn" data-value="system" data-i18n="settings.lang.system">Системный</button>
+          <button class="seg-btn" data-value="light">☀ Светлая</button>
+          <button class="seg-btn" data-value="dark">🌙 Тёмная</button>
+          <button class="seg-btn" data-value="system">⚙ Системная</button>
         </div>
       </div>
 
       <!-- CUSTOM EDITOR TAB -->
       <div class="stab-panel" id="stab-custom">
-        <div class="sg-label" data-i18n="settings.preview">Предпросмотр</div>
+        <div class="sg-label">Предпросмотр</div>
         <div class="live-preview" id="livePreview">
           <div class="lp-header"><div class="lp-dot"></div><div class="lp-text"></div></div>
           <div class="lp-body">
@@ -1258,70 +1381,86 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
             <div class="lp-card"><div class="lp-card-line soft"></div><div class="lp-card-line"></div><div class="lp-card-line accent"></div></div>
           </div>
         </div>
-        <div class="sg-label" data-i18n="settings.colors">Цвета</div>
+        <div class="sg-label">Цвета</div>
         <div class="custom-editor" id="customEditor">
           <!-- filled by JS -->
         </div>
-        <div class="sg-label" style="margin-top:16px;" data-i18n="settings.quickActions">Быстрые действия</div>
+        <div class="sg-label" style="margin-top:16px;">Быстрые действия</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-outline" id="randomizeBtn" data-i18n="settings.random"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-shuffle"/></svg> Случайная тема</button>
-          <button class="btn-outline" id="applyCustomBtn" data-i18n="settings.apply"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-paint"/></svg> Применить</button>
+          <button class="btn-outline" id="randomizeBtn"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-shuffle"/></svg> Случайная тема</button>
+          <button class="btn-outline" id="applyCustomBtn"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-paint"/></svg> Применить</button>
         </div>
-        <div class="sg-label" style="margin-top:16px;" data-i18n="settings.saveTheme">Сохранить тему</div>
+        <div class="sg-label" style="margin-top:16px;">Сохранить тему</div>
         <div style="display:flex;gap:8px;">
-          <input type="text" class="input-text" id="customThemeName" data-i18n-placeholder="settings.themeNamePlaceholder" placeholder="Название темы..." style="flex:1">
-          <button class="btn-outline" id="saveCustomBtn" data-i18n="settings.save"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-save"/></svg> Сохранить</button>
+          <input type="text" class="input-text" id="customThemeName" placeholder="Название темы..." style="flex:1">
+          <button class="btn-outline" id="saveCustomBtn"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-save"/></svg> Сохранить</button>
         </div>
       </div>
 
       <!-- SAVED TAB -->
       <div class="stab-panel" id="stab-saved">
-        <div class="sg-label" data-i18n="settings.savedThemes">Сохранённые темы</div>
+        <div class="sg-label">Поделиться темой по коду</div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" class="input-text" id="themeCodeOut" readonly style="flex:1;font-family:'Space Mono',monospace;font-size:11px;" placeholder="Код появится тут">
+          <button class="btn-outline" id="genThemeCodeBtn">Создать код</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" class="input-text" id="themeCodeIn" style="flex:1;font-family:'Space Mono',monospace;font-size:11px;" placeholder="Вставьте код темы...">
+          <button class="btn-outline" id="importThemeCodeBtn">Применить код</button>
+        </div>
+        <div class="sg-label" style="margin-top:20px;">Сохранённые темы</div>
         <div class="saved-themes" id="savedThemesList">
-          <div class="update-state" data-i18n="settings.noSaved">Нет сохранённых тем</div>
+          <div class="update-state">Нет сохранённых тем</div>
         </div>
         <div style="margin-top:16px;">
-          <button class="btn-danger" id="clearAllThemesBtn" data-i18n="settings.clearAll">🗑 Удалить все темы</button>
+          <button class="btn-danger" id="clearAllThemesBtn">🗑 Удалить все темы</button>
         </div>
       </div>
 
       <!-- LAYOUT TAB -->
       <div class="stab-panel" id="stab-layout">
-        <div class="sg-label" data-i18n="settings.cornerRadius">Скругление углов</div>
+        <div class="sg-label">Скругление углов</div>
         <div class="slider-row">
-          <label data-i18n="settings.radius">Радиус</label>
+          <label>Радиус</label>
           <input type="range" id="radiusSlider" min="0" max="20" value="0" step="1">
           <span class="sv" id="radiusVal">0px</span>
         </div>
-        <div class="sg-label" data-i18n="settings.scale">Масштаб интерфейса</div>
+        <div class="sg-label">Масштаб интерфейса</div>
         <div class="slider-row">
-          <label data-i18n="settings.scaleLabel">Масштаб</label>
+          <label>Масштаб</label>
           <input type="range" id="scaleSlider" min="80" max="120" value="100" step="2">
           <span class="sv" id="scaleVal">100%</span>
         </div>
-        <div class="sg-label" data-i18n="settings.font">Шрифт интерфейса</div>
+        <div class="sg-label">Шрифт интерфейса</div>
         <div class="font-row" id="fontPicker">
           <button class="font-chip active" data-font="'IBM Plex Sans', sans-serif" style="font-family:'IBM Plex Sans',sans-serif">IBM Plex Sans</button>
           <button class="font-chip" data-font="'Oswald', sans-serif" style="font-family:'Oswald',sans-serif">OSWALD</button>
           <button class="font-chip" data-font="'Space Mono', monospace" style="font-family:'Space Mono',monospace">Space Mono</button>
           <button class="font-chip" data-font="system-ui, sans-serif" style="font-family:system-ui,sans-serif">Системный</button>
         </div>
-        <div class="sg-label" style="margin-top:16px;" data-i18n="settings.stripe">Полосатый баннер</div>
+        <div class="sg-label" style="margin-top:16px;">Полосатый баннер</div>
         <div class="seg-group" id="stripeGroup">
-          <button class="seg-btn active" data-value="on" data-i18n="settings.show">Показать</button>
-          <button class="seg-btn" data-value="off" data-i18n="settings.hide">Скрыть</button>
+          <button class="seg-btn active" data-value="on">Показать</button>
+          <button class="seg-btn" data-value="off">Скрыть</button>
         </div>
-        <div class="sg-label" style="margin-top:16px;" data-i18n="settings.noise">Зернистость фона</div>
+        <div class="sg-label" style="margin-top:16px;">Зернистость фона</div>
         <div class="seg-group" id="noiseGroup">
-          <button class="seg-btn active" data-value="on" data-i18n="settings.on">Включена</button>
-          <button class="seg-btn" data-value="off" data-i18n="settings.off">Выключена</button>
+          <button class="seg-btn active" data-value="on">Включена</button>
+          <button class="seg-btn" data-value="off">Выключена</button>
         </div>
-        <div class="sg-label" style="margin-top:20px;" data-i18n="settings.reset">Сброс</div>
-        <button class="btn-danger" id="resetLayoutBtn" data-i18n="settings.resetAll">↩ Сбросить всё к умолчаниям</button>
+        <div class="sg-label" style="margin-top:20px;">Сброс</div>
+        <button class="btn-danger" id="resetLayoutBtn">↩ Сбросить всё к умолчаниям</button>
       </div>
 
     </div>
   </div>
+</div>
+
+<div class="lightbox-overlay" id="lightboxOverlay">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Закрыть">×</button>
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Предыдущее">‹</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Следующее">›</button>
 </div>
 
 <canvas id="gestureCanvas"></canvas>
@@ -1337,188 +1476,22 @@ function sGetJSON(k,def){ try{ const v=localStorage.getItem(k); return v?JSON.pa
 function sSetJSON(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 
 /* ============================================================
-   I18N (полный словарь)
+   TEXT CONSTANTS (все тексты сайта в одном месте)
 ============================================================ */
-const I18N = {
-  en: {
-    'page.title': 'ISR — Industrial Server of Workers',
-    'header.subtitle': 'Industrial Server of Workers',
-    'nav.home': 'Home',
-    'nav.history': 'History',
-    'nav.laws': 'Laws',
-    'nav.staff': 'Staff',
-    'nav.updates': 'Updates',
-    'nav.join': 'Join ISR',
-    'nav.more': 'More',
-    'hero.eyebrow': 'WORKSHOP OPEN · SHIFT IN PROGRESS',
-    'hero.title': 'Industrial<br>Server<br><span>of Workers.</span>',
-    'hero.lead': 'ISR is a virtual state built on Discord with its own laws, ranks, and round-the-clock moderation.',
-    'hero.readLaws': 'Read the laws',
-    'floorbar.laws': 'law codes',
-    'floorbar.days': 'days since founding',
-    'floorbar.mod': 'moderation without days off',
-    'floorbar.party': 'ruling party',
-    'about.title': 'A state on Discord',
-    'about.p1': 'ISR is not just a server — it\'s a virtual state with its own system of power: president, parties, State Duma and a full legal code.',
-    'about.p2': 'Every member must read the laws upon joining. Staff and round-the-clock moderation keep order.',
-    'about.li1': 'A full legal system: Charter, Criminal, Administrative and Disciplinary codes',
-    'about.li2': 'Its own political system with parties and elections',
-    'about.li3': 'Ranks and roles worth earning',
-    'about.li4': 'Channels for every interest — from chat to forums',
-    'history.eyebrow': 'NATIONAL ARCHIVE',
-    'history.title': 'History',
-    'history.subtitle': 'From the first server without any laws to a state with parties, elections and a full code of laws.',
-    'laws.eyebrow': 'ISR LEGISLATION',
-    'laws.title': 'Laws',
-    'laws.subtitle': 'The full code of the state: charter, criminal, administrative and disciplinary codes.',
-    'laws.searchPlaceholder': 'Search a law article, e.g. "spam" or "UK ISR 0.7"',
-    'laws.designations': 'Designations',
-    'staff.eyebrow': 'NATIONAL LEADERSHIP',
-    'staff.title': 'Staff',
-    'staff.subtitle': 'The people who run ISR and keep order on the server.',
-    'staff.refresh': '↻ Refresh',
-    'nav.support': 'Sponsors',
-    'support.eyebrow': 'HALL OF FAME',
-    'support.title': 'Sponsors',
-    'support.subtitle': 'The people who support ISR\'s growth with money and good vibes.',
-    'support.refresh': '↻ Refresh',
-    'updates.eyebrow': 'NOTICE BOARD',
-    'updates.title': 'Updates',
-    'updates.subtitle': 'News and changes on the server.',
-    'updates.refresh': '↻ Refresh',
-    'footer.note': 'Laws are in effect across the entire state.',
-    'clock.shift': 'SHIFT',
-    'discord.loading': 'connecting to Discord...',
-    'discord.online': '{n} members online',
-    'discord.error': 'failed to get Discord status',
-    'loading.updates': 'Loading updates...',
-    'loading.staff': 'Loading staff...',
-    'loading.support': 'Loading sponsors...',
-    'error.updates': 'Failed to load updates.',
-    'error.staff': 'Failed to load staff.',
-    'error.support': 'There are currently no sponsors, or they failed to load.',
-    'laws.foundPrefix': 'Found: ',
-    'laws.notFound': 'Nothing found',
-    'console.title': 'ISR CONTROL PANEL',
-    'console.placeholder': 'help',
-    'console.boot1': 'initializing ISR system...',
-    'console.boot2': 'access: granted',
-    'console.boot3': 'moderation: 24/7 · online',
-    'console.boot4': 'type help for commands',
-    'console.help': 'home/history/laws/staff/updates — go to page|status — server status|online — Discord members online|theme <id> — switch theme|date — current date|clear — clear screen|exit — close',
-    'console.goto': 'navigating: ',
-    'console.modStatus': 'moderation: 24/7 · online',
-    'console.daysSince': 'days since founding: ',
-    'console.requesting': 'requesting Discord status...',
-    'console.notConfigured': 'online: not configured',
-    'console.onlineNow': 'online now: ',
-    'console.discordError': 'failed to get Discord status (',
-    'console.themeChanged': 'theme: ',
-    'console.themeUsage': 'usage: theme <id>',
-    'console.whoami': 'guest · access: worker',
-    'console.unknown': 'command not found: ',
-    'console.unknownHint': ' — type help',
-    'toast.access': 'Access granted',
-    'settings.title': '⚙ Settings',
-    'settings.tab.themes': '🎨 Themes',
-    'settings.tab.custom': '✏️ Editor',
-    'settings.tab.saved': '💾 My themes',
-    'settings.tab.layout': '📐 Layout',
-    'settings.builtin': 'Built-in themes',
-    'settings.baseMode': 'Base mode',
-    'settings.light': '☀ Light',
-    'settings.dark': '🌙 Dark',
-    'settings.system': '⚙ System',
-    'settings.language': 'Language',
-    'settings.lang.ru': 'Русский',
-    'settings.lang.en': 'English',
-    'settings.lang.system': 'System',
-    'settings.preview': 'Preview',
-    'settings.colors': 'Colors',
-    'settings.quickActions': 'Quick actions',
-    'settings.random': '🎲 Random theme',
-    'settings.apply': 'Apply',
-    'settings.saveTheme': 'Save theme',
-    'settings.themeNamePlaceholder': 'Theme name...',
-    'settings.save': 'Save',
-    'settings.savedThemes': 'Saved themes',
-    'settings.noSaved': 'No saved themes',
-    'settings.clearAll': '🗑 Delete all themes',
-    'settings.cornerRadius': 'Corner radius',
-    'settings.radius': 'Radius',
-    'settings.scale': 'Interface scale',
-    'settings.scaleLabel': 'Scale',
-    'settings.font': 'Interface font',
-    'settings.stripe': 'Striped banner',
-    'settings.show': 'Show',
-    'settings.hide': 'Hide',
-    'settings.noise': 'Background grain',
-    'settings.on': 'On',
-    'settings.off': 'Off',
-    'settings.reset': 'Reset',
-    'settings.resetAll': '↩ Reset all to defaults'
-  },
-  ru: {
-    'page.title': 'ИСР — Индустриальный Сервер Работяг',
-    'header.subtitle': 'Индустриальный Сервер Работяг',
-    'nav.home': 'Главная',
-    'nav.history': 'История',
-    'nav.laws': 'Законы',
-    'nav.staff': 'Стафф',
-    'nav.updates': 'Обновления',
-    'nav.join': 'Вступить в ИСР',
-    'nav.more': 'Ещё',
-    'hero.eyebrow': 'ЦЕХ ОТКРЫТ · СМЕНА ИДЁТ',
-    'hero.title': 'Индустриальный<br>Сервер<br><span>Работяг.</span>',
-    'hero.lead': 'ИСР — это виртуальное государство на Discord со своими законами, рангами и круглосуточной модерацией.',
-    'hero.readLaws': 'Читать законы',
-    'floorbar.laws': 'свода законов',
-    'floorbar.days': 'дней с основания',
-    'floorbar.mod': 'модерация без выходных',
-    'floorbar.party': 'правящая партия',
-    'about.title': 'Государство в Discord',
-    'about.p1': 'ИСР — не просто сервер, а виртуальное государство со своей системой власти: президент, партии, госдума и полноценный свод законов.',
-    'about.p2': 'Каждый участник обязан ознакомиться с законами при вступлении. За порядком следит стафф и круглосуточная модерация.',
-    'about.li1': 'Полноценная система законов: УС, УК, АК, ДК',
-    'about.li2': 'Своя политическая система с партиями и выборами',
-    'about.li3': 'Ранги и роли, за которые можно побороться',
-    'about.li4': 'Каналы под любые интересы — от чата до форумов',
-    'history.eyebrow': 'АРХИВ ГОСУДАРСТВА',
-    'history.title': 'История создания',
-    'history.subtitle': 'От первого сервера без единого закона до государства с партиями, выборами и полным сводом кодексов.',
-    'laws.eyebrow': 'ЗАКОНОДАТЕЛЬСТВО ИСР',
-    'laws.title': 'Законы',
-    'laws.subtitle': 'Полный свод законов государства: устав, уголовный, административный и дисциплинарный кодексы.',
-    'laws.searchPlaceholder': 'Найти пункт закона, например «спам» или «УК ИСР 0.7»',
-    'laws.designations': 'Обозначения',
-    'staff.eyebrow': 'РУКОВОДСТВО ГОСУДАРСТВА',
-    'staff.title': 'Стафф',
-    'staff.subtitle': 'Люди, которые управляют ИСР и отвечают за порядок на сервере.',
-    'staff.refresh': '↻ Обновить',
-    'nav.support': 'Спонсоры',
-    'support.eyebrow': 'ЗАЛ ПОЧЁТА',
-    'support.title': 'Спонсоры',
-    'support.subtitle': 'Люди, которые поддерживают развитие ИСР рублём и хорошим настроением.',
-    'support.refresh': '↻ Обновить',
-    'updates.eyebrow': 'ДОСКА ОБЪЯВЛЕНИЙ',
-    'updates.title': 'Обновления',
-    'updates.subtitle': 'Новости и изменения на сервере.',
-    'updates.refresh': '↻ Обновить',
-    'footer.note': 'Законы действительны на всей территории государства',
+const TXT = {
     'clock.shift': 'СМЕНА',
-    'discord.loading': 'подключение к Discord...',
     'discord.online': '{n} участников онлайн',
     'discord.error': 'не удалось получить статус Discord',
     'loading.updates': 'Загрузка обновлений...',
+    'loading.announce': 'Загрузка объявлений...',
     'loading.staff': 'Загрузка стаффа...',
     'loading.support': 'Загрузка спонсоров...',
     'error.updates': 'Не удалось загрузить обновления.',
+    'error.announce': 'Пока нет объявлений, либо не удалось загрузить.',
     'error.staff': 'Не удалось загрузить стафф.',
     'error.support': 'На данный момент спонсоров нету, либо не удалось загрузить.',
     'laws.foundPrefix': 'Найдено: ',
     'laws.notFound': 'Ничего не найдено',
-    'console.title': 'ПУЛЬТ УПРАВЛЕНИЯ ИСР',
-    'console.placeholder': 'help',
     'console.boot1': 'инициализация системы ИСР...',
     'console.boot2': 'доступ: разрешён',
     'console.boot3': 'модерация: 24/7 · в сети',
@@ -1537,103 +1510,11 @@ const I18N = {
     'console.unknown': 'команда не найдена: ',
     'console.unknownHint': ' — введите help',
     'toast.access': 'Доступ получен',
-    'settings.title': '⚙ Настройки',
-    'settings.tab.themes': '🎨 Темы',
-    'settings.tab.custom': '✏️ Редактор',
-    'settings.tab.saved': '💾 Мои темы',
-    'settings.tab.layout': '📐 Интерфейс',
-    'settings.builtin': 'Встроенные темы',
-    'settings.baseMode': 'Базовый режим',
-    'settings.light': '☀ Светлая',
-    'settings.dark': '🌙 Тёмная',
-    'settings.system': '⚙ Системная',
-    'settings.language': 'Язык',
-    'settings.lang.ru': 'Русский',
-    'settings.lang.en': 'English',
-    'settings.lang.system': 'Системный',
-    'settings.preview': 'Предпросмотр',
-    'settings.colors': 'Цвета',
-    'settings.quickActions': 'Быстрые действия',
-    'settings.random': '🎲 Случайная тема',
     'settings.apply': 'Применить',
-    'settings.saveTheme': 'Сохранить тему',
-    'settings.themeNamePlaceholder': 'Название темы...',
-    'settings.save': 'Сохранить',
-    'settings.savedThemes': 'Сохранённые темы',
     'settings.noSaved': 'Нет сохранённых тем',
-    'settings.clearAll': '🗑 Удалить все темы',
-    'settings.cornerRadius': 'Скругление углов',
-    'settings.radius': 'Радиус',
-    'settings.scale': 'Масштаб интерфейса',
-    'settings.scaleLabel': 'Масштаб',
-    'settings.font': 'Шрифт интерфейса',
-    'settings.stripe': 'Полосатый баннер',
-    'settings.show': 'Показать',
-    'settings.hide': 'Скрыть',
-    'settings.noise': 'Зернистость фона',
-    'settings.on': 'Включена',
-    'settings.off': 'Выключена',
-    'settings.reset': 'Сброс',
-    'settings.resetAll': '↩ Сбросить всё к умолчаниям'
-  }
 };
-
 function t(key) {
-  const dict = I18N[currentLang] || I18N.ru;
-  return dict[key] || key;
-}
-
-function applyLanguage(lang) {
-  document.documentElement.lang = lang;
-  const dict = I18N[lang] || I18N.ru;
-  
-  // Все элементы с data-i18n
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    const val = dict[key];
-    if (val != null) {
-      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'BUTTON' && el.type === 'submit') {
-        el.value = val;
-      } else {
-        // Для title и других особых случаев
-        if (el.tagName === 'TITLE') {
-          document.title = val;
-          return;
-        }
-        // Вставляем HTML, если есть теги
-        el.innerHTML = val;
-      }
-    }
-  });
-  
-  // Плейсхолдеры
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.dataset.i18nPlaceholder;
-    const val = dict[key];
-    if (val != null) {
-      el.placeholder = val;
-    }
-  });
-  
-  // Discord live текст
-  const liveText = document.getElementById('discordLiveText');
-  if (liveText && liveText.dataset.i18n) {
-    liveText.textContent = dict[liveText.dataset.i18n] || liveText.textContent;
-  }
-}
-
-function setLanguage(mode) {
-  langMode = mode;
-  sSet('isr-lang', mode);
-  let eff = mode;
-  if (mode === 'system') {
-    eff = (navigator.language || 'ru').toLowerCase().startsWith('ru') ? 'ru' : 'en';
-  }
-  currentLang = eff;
-  applyLanguage(eff);
-  document.querySelectorAll('#langGroup .seg-btn').forEach(b => 
-    b.classList.toggle('active', b.dataset.value === mode)
-  );
+  return TXT[key] || key;
 }
 
 /* ============================================================
@@ -1661,6 +1542,7 @@ function showPage(id){
   closeMobileMenu();
   window.scrollTo({top:0,behavior:'instant'});
   document.querySelectorAll('#'+id+' .reveal, #'+id+' .stagger').forEach(el=>io.observe(el));
+  setTimeout(forceRevealVisible, 60);
 }
 allTabs.forEach(t=>{ if(t.dataset.page) t.addEventListener('click',()=>showPage(t.dataset.page)); });
 
@@ -1671,6 +1553,22 @@ const io = new IntersectionObserver(entries=>{
   entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in-view'); });
 },{threshold:0.1});
 document.querySelectorAll('.reveal,.stagger').forEach(el=>io.observe(el));
+
+/* Safety net: если reveal-элемент уже физически виден на экране (например,
+   после смены масштаба/resize), но intersection ещё не сработал — принудительно
+   показываем его. Так контент никогда не остаётся невидимым. */
+function forceRevealVisible(){
+  document.querySelectorAll('.page.active .reveal:not(.in-view), .page.active .stagger:not(.in-view)').forEach(el=>{
+    const r = el.getBoundingClientRect();
+    if(r.top < window.innerHeight && r.bottom > 0){
+      el.classList.add('in-view');
+    }
+  });
+}
+window.addEventListener('resize', forceRevealVisible, {passive:true});
+window.addEventListener('load', forceRevealVisible);
+setTimeout(forceRevealVisible, 400);
+setTimeout(forceRevealVisible, 1200);
 
 /* ============================================================
    MOBILE MENU
@@ -1693,6 +1591,26 @@ burgerBtn.addEventListener('click', openMobileMenu);
 mobileMenuOverlay.addEventListener('click', closeMobileMenu);
 moreNavBtn.addEventListener('click', openMobileMenu);
 mobileSettingsBtn.addEventListener('click', ()=>{ closeMobileMenu(); openSettings(); });
+
+/* ============================================================
+   MORE DROPDOWN (desktop)
+============================================================ */
+const moreDropdownBtn = document.getElementById('moreDropdownBtn');
+const moreDropdownPanel = document.getElementById('moreDropdownPanel');
+function closeMoreDropdown(){
+  moreDropdownPanel.classList.remove('open');
+  moreDropdownBtn.setAttribute('aria-expanded','false');
+}
+moreDropdownBtn.addEventListener('click', e=>{
+  e.stopPropagation();
+  const willOpen = !moreDropdownPanel.classList.contains('open');
+  moreDropdownPanel.classList.toggle('open', willOpen);
+  moreDropdownBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+});
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#moreDropdown')) closeMoreDropdown();
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMoreDropdown(); });
 
 /* ============================================================
    PROGRESS + SCROLL TOP
@@ -1748,8 +1666,6 @@ const COLOR_FIELDS = [
 
 let activeThemeId = sGet('isr-theme-id') || 'light';
 let baseMode = sGet('isr-base-mode') || 'system';
-let langMode = sGet('isr-lang') || 'system';
-let currentLang = 'ru';
 let customThemeVars = sGetJSON('isr-custom-vars', BUILT_IN_THEMES[0].vars);
 
 function hexToRGB(hex){ const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); return [r,g,b]; }
@@ -1866,7 +1782,6 @@ function updatePresetUI(){
     btn.classList.toggle('active', btn.dataset.id===activeThemeId);
   });
   document.querySelectorAll('#baseModeGroup .seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.value===baseMode));
-  document.querySelectorAll('#langGroup .seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.value===langMode));
 }
 
 function buildCustomEditor(){
@@ -1969,13 +1884,6 @@ document.getElementById('baseModeGroup').addEventListener('click',e=>{
   showToast(btn.textContent.trim());
 });
 
-/* Lang seg */
-document.getElementById('langGroup').addEventListener('click',e=>{
-  const btn=e.target.closest('.seg-btn'); if(!btn) return;
-  setLanguage(btn.dataset.value);
-  showToast(btn.textContent.trim());
-});
-
 /* Apply custom */
 document.getElementById('applyCustomBtn').addEventListener('click',()=>{
   applyCustomTheme({...customThemeVars},'custom');
@@ -1992,6 +1900,46 @@ document.getElementById('saveCustomBtn').addEventListener('click',()=>{
   sSetJSON('isr-saved-themes',saved);
   buildSavedThemes();
   showToast('Тема «'+name+'» сохранена!');
+});
+
+/* Theme share code (без сервера, всё зашито в код) */
+function encodeThemeCode(vars){
+  const compact = COLOR_FIELDS.map(f => vars[f.var] || '');
+  const json = JSON.stringify(compact);
+  const b64 = btoa(unescape(encodeURIComponent(json)));
+  return 'ISR1-' + b64;
+}
+function decodeThemeCode(code){
+  const tr = (code||'').trim();
+  if(!tr.startsWith('ISR1-')) return null;
+  try {
+    const json = decodeURIComponent(escape(atob(tr.slice(5))));
+    const compact = JSON.parse(json);
+    if(!Array.isArray(compact) || compact.length !== COLOR_FIELDS.length) return null;
+    const vars = {};
+    COLOR_FIELDS.forEach((f,i) => { if(compact[i]) vars[f.var] = compact[i]; });
+    return vars;
+  } catch(e) { return null; }
+}
+document.getElementById('genThemeCodeBtn').addEventListener('click',()=>{
+  const code = encodeThemeCode(customThemeVars);
+  const out = document.getElementById('themeCodeOut');
+  out.value = code;
+  out.select();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(code).then(()=>showToast('Код темы скопирован!')).catch(()=>showToast('Код создан — скопируйте вручную'));
+  } else {
+    showToast('Код создан — скопируйте вручную');
+  }
+});
+document.getElementById('importThemeCodeBtn').addEventListener('click',()=>{
+  const code = document.getElementById('themeCodeIn').value;
+  const vars = decodeThemeCode(code);
+  if(!vars){ showToast('Код темы недействителен'); return; }
+  customThemeVars = {...vars};
+  applyCustomTheme(vars,'custom');
+  syncCustomEditorInputs(vars);
+  showToast('Тема применена из кода!');
 });
 
 /* Randomize */
@@ -2073,6 +2021,7 @@ document.getElementById('scaleSlider').addEventListener('input',e=>{
   document.getElementById('scaleVal').textContent=layoutScale+'%';
   document.documentElement.style.fontSize=(layoutScale/100*16)+'px';
   sSet('isr-scale',layoutScale);
+  setTimeout(forceRevealVisible, 30);
 });
 document.getElementById('fontPicker').addEventListener('click',e=>{
   const c=e.target.closest('.font-chip'); if(!c) return;
@@ -2107,11 +2056,11 @@ document.getElementById('resetLayoutBtn').addEventListener('click',()=>{
 (function init(){
   applyLayout();
   initTheme();
-  setLanguage(langMode);
   const founded=new Date(2026,2,11);
   const days=Math.max(0,Math.floor((new Date()-founded)/86400000));
   const dc=document.getElementById('daysCount');
   if(dc) dc.dataset.target=days;
+  setTimeout(forceRevealVisible, 100);
 })();
 
 /* ============================================================
@@ -2246,10 +2195,11 @@ function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s==
 
 const UPDATE_ICONS={'обновление':'megaphone','фикс':'tools','ивент':'flag','событие':'flag','важно':'warning','набор':'inbox','предупреждение':'warning'};
 function pickUpdateIcon(tag){ return UPDATE_ICONS[(tag||'').toLowerCase().trim()]||'document'; }
+function isUpdateTag(tag){ return (tag||'').toLowerCase().trim()==='обновление'; }
 
-function renderUpdates(items){
-  const list=document.getElementById('updatesList');
-  if(!Array.isArray(items)||!items.length){ list.innerHTML='<div class="update-state">'+t('error.updates')+'</div>'; return; }
+function renderCardsInto(listId, items, emptyKey){
+  const list=document.getElementById(listId);
+  if(!Array.isArray(items)||!items.length){ list.innerHTML='<div class="update-state">'+t(emptyKey)+'</div>'; return; }
   list.innerHTML=items.slice().reverse().map(u=>{
     const ic=pickUpdateIcon(u.tag);
     return '<div class="update-card">'
@@ -2261,12 +2211,27 @@ function renderUpdates(items){
       +'</div></div>';
   }).join('');
 }
+function renderUpdates(items){
+  renderCardsInto('updatesList', (items||[]).filter(u=>isUpdateTag(u.tag)), 'error.updates');
+}
+function renderAnnouncements(items){
+  renderCardsInto('announceList', (items||[]).filter(u=>!isUpdateTag(u.tag)), 'error.announce');
+}
 function loadUpdates(){
-  const list=document.getElementById('updatesList');
-  list.innerHTML='<div class="update-state">'+t('loading.updates')+'</div>';
-  fetch('json/updatesFILE',{cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(renderUpdates).catch(()=>{ list.innerHTML='<div class="update-state">'+t('error.updates')+'</div>'; });
+  const uList=document.getElementById('updatesList');
+  const aList=document.getElementById('announceList');
+  uList.innerHTML='<div class="update-state">'+t('loading.updates')+'</div>';
+  if(aList) aList.innerHTML='<div class="update-state">'+t('loading.announce')+'</div>';
+  fetch('json/updatesFILE',{cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(items=>{
+    renderUpdates(items);
+    renderAnnouncements(items);
+  }).catch(()=>{
+    uList.innerHTML='<div class="update-state">'+t('error.updates')+'</div>';
+    if(aList) aList.innerHTML='<div class="update-state">'+t('error.announce')+'</div>';
+  });
 }
 document.getElementById('refreshUpdates')?.addEventListener('click',loadUpdates);
+document.getElementById('refreshAnnounce')?.addEventListener('click',loadUpdates);
 loadUpdates();
 
 const STAFF_PAL=[{bg:'var(--ink)',fg:'var(--yellow)'},{bg:'var(--yellow-deep)',fg:'var(--ink)'},{bg:'var(--steel-2)',fg:'var(--yellow)'}];
@@ -2340,6 +2305,45 @@ document.getElementById('refreshSupport')?.addEventListener('click',loadSupport)
 loadSupport();
 
 /* ============================================================
+   GALLERY + LIGHTBOX
+============================================================ */
+let GALLERY_IMAGES=[];
+let galleryIndex=0;
+function renderGallery(items){
+  const list=document.getElementById('galleryList');
+  if(!list) return;
+  GALLERY_IMAGES=Array.isArray(items)?items:[];
+  if(!GALLERY_IMAGES.length){ list.innerHTML='<div class="update-state">Пока нет фото</div>'; return; }
+  list.innerHTML=GALLERY_IMAGES.map((src,i)=>'<div class="gallery-item" data-idx="'+i+'"><img src="'+escapeHtml(src)+'" alt="" loading="lazy"></div>').join('');
+  list.querySelectorAll('.gallery-item').forEach(el=>el.addEventListener('click',()=>openLightbox(+el.dataset.idx)));
+}
+function loadGallery(){
+  const list=document.getElementById('galleryList');
+  if(!list) return;
+  list.innerHTML='<div class="update-state">Загрузка галереи...</div>';
+  fetch('json/galleryImages',{cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(renderGallery).catch(()=>{ list.innerHTML='<div class="update-state">Не удалось загрузить галерею.</div>'; });
+}
+function openLightbox(idx){
+  galleryIndex=(idx+GALLERY_IMAGES.length)%GALLERY_IMAGES.length;
+  document.getElementById('lightboxImg').src=GALLERY_IMAGES[galleryIndex];
+  document.getElementById('lightboxOverlay').classList.add('open');
+}
+function closeLightbox(){ document.getElementById('lightboxOverlay').classList.remove('open'); }
+function shiftLightbox(delta){ openLightbox(galleryIndex+delta); }
+document.getElementById('lightboxClose')?.addEventListener('click',closeLightbox);
+document.getElementById('lightboxPrev')?.addEventListener('click',()=>shiftLightbox(-1));
+document.getElementById('lightboxNext')?.addEventListener('click',()=>shiftLightbox(1));
+document.getElementById('lightboxOverlay')?.addEventListener('click',e=>{ if(e.target.id==='lightboxOverlay') closeLightbox(); });
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('lightboxOverlay')?.classList.contains('open')) return;
+  if(e.key==='Escape') closeLightbox();
+  if(e.key==='ArrowLeft') shiftLightbox(-1);
+  if(e.key==='ArrowRight') shiftLightbox(1);
+});
+document.getElementById('refreshGallery')?.addEventListener('click',loadGallery);
+loadGallery();
+
+/* ============================================================
    SPARK BURST
 ============================================================ */
 const sparkCanvas=document.getElementById('sparkCanvas');
@@ -2410,7 +2414,7 @@ function runCommand(raw){
     else cPrint(t('console.themeUsage'),'err');
   }
   else if(cmd==='themes'){ cPrint('Темы: '+BUILT_IN_THEMES.map(t=>t.id+' ('+t.name+')').join(', '),'resp'); }
-  else if(cmd==='date'){ cPrint(new Date().toLocaleString(currentLang==='ru'?'ru-RU':'en-US'),'resp'); }
+  else if(cmd==='date'){ cPrint(new Date().toLocaleString('ru-RU'),'resp'); }
   else if(cmd==='whoami'){ cPrint(t('console.whoami'),'resp'); }
   else if(cmd==='clear'||cmd==='cls'){ cOut.innerHTML=''; }
   else if(cmd==='discord'){ cPrint('открываю Discord...','ok'); window.open('https://discord.gg/hwzNAGqSbf','_blank'); }
