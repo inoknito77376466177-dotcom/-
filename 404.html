@@ -179,6 +179,20 @@
   // Если ничего не сохранено — оставляем светлую тему по умолчанию (уже задана в :root)
 })();
 </script>
+<script>
+  /* Редирект на index.html с сохранением пути для SPA-навигации.
+     GitHub Pages отдаёт эту страницу для любого несуществующего файла,
+     поэтому сначала проверяем: это реальный раздел сайта (home/laws/...)
+     или просто битая ссылка. Редиректим только в первом случае. */
+  (function(){
+    var SITE_PAGES = ['home','history','laws','staff','support','gallery','updates','announcements'];
+    var path = location.pathname.replace(/^\/+|\/+$/g, '');
+    if (SITE_PAGES.indexOf(path) !== -1) {
+      sessionStorage.setItem('isr-redirect-path', '/' + path);
+      location.replace('/' + location.search + location.hash);
+    }
+  })();
+</script>
 </head>
 <body>
 <div class="stripe"></div>
