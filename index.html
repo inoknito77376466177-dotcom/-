@@ -1534,11 +1534,7 @@ loadIcons();
 ============================================================ */
 const allTabs = document.querySelectorAll('.tabs button, .mobile-menu-panel button[data-page], .mobile-bottom-nav button[data-page]');
 
-const SITE_PAGES = ['home','history','laws','staff','support','gallery','updates','announcements'];
-
-function showPage(id, opts){
-  opts = opts || {};
-  if(!SITE_PAGES.includes(id)) id = 'home';
+function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const pg = document.getElementById(id);
   if(pg) pg.classList.add('active');
@@ -1547,46 +1543,8 @@ function showPage(id, opts){
   window.scrollTo({top:0,behavior:'instant'});
   document.querySelectorAll('#'+id+' .reveal, #'+id+' .stagger').forEach(el=>io.observe(el));
   setTimeout(forceRevealVisible, 60);
-
-  if(!opts.skipHistory){
-    const path = id==='home' ? '/' : '/'+id;
-    if(location.pathname !== path){
-      if(opts.replace){ history.replaceState({page:id}, '', path); }
-      else { history.pushState({page:id}, '', path); }
-    }
-  }
 }
 allTabs.forEach(t=>{ if(t.dataset.page) t.addEventListener('click',()=>showPage(t.dataset.page)); });
-
-window.addEventListener('popstate', (e)=>{
-  const id = (e.state && e.state.page) || pageIdFromPath(location.pathname);
-  showPage(id, {skipHistory:true});
-});
-
-function pageIdFromPath(pathname){
-  const clean = pathname.replace(/^\/+|\/+$/g,'');
-  return SITE_PAGES.includes(clean) ? clean : 'home';
-}
-
-/* Открыть раздел, соответствующий текущему URL, при первой загрузке страницы.
-   Вызывается ниже по файлу (после объявления io/IntersectionObserver), см. initPageFromURL(). */
-function initPageFromURL(){
-  /* Если нас сюда привёл редирект с 404.html (см. 404.html), путь лежит в sessionStorage —
-     на GitHub Pages именно так узнаём, что человек открыл /laws напрямую или обновил страницу. */
-  const redirectPath = sessionStorage.getItem('isr-redirect-path');
-  if(redirectPath){
-    sessionStorage.removeItem('isr-redirect-path');
-    const id = pageIdFromPath(redirectPath);
-    showPage(id, {replace:true});
-    return;
-  }
-  const id = pageIdFromPath(location.pathname);
-  if(id !== 'home'){
-    showPage(id, {replace:true});
-  } else {
-    history.replaceState({page:'home'}, '', '/');
-  }
-}
 
 /* ============================================================
    INTERSECTION OBSERVER
@@ -1599,8 +1557,6 @@ document.querySelectorAll('.reveal,.stagger').forEach(el=>io.observe(el));
 /* Safety net: если reveal-элемент уже физически виден на экране (например,
    после смены масштаба/resize), но intersection ещё не сработал — принудительно
    показываем его. Так контент никогда не остаётся невидимым. */
-initPageFromURL();
-
 function forceRevealVisible(){
   document.querySelectorAll('.page.active .reveal:not(.in-view), .page.active .stagger:not(.in-view)').forEach(el=>{
     const r = el.getBoundingClientRect();
