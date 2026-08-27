@@ -164,6 +164,12 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 120px 120px;
 }
+#bgShapesLayer {
+  position: fixed; inset: 0;
+  z-index: -2; pointer-events: none;
+  overflow: hidden;
+}
+#bgShapesLayer svg { position:absolute; inset:0; width:100%; height:100%; }
 h1,h2,h3,.disp { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: .02em; margin: 0; }
 .mono { font-family: 'Space Mono', monospace; }
 .display-font { font-family: 'Unbounded', sans-serif !important; font-weight: 800; letter-spacing: -.01em; }
@@ -751,9 +757,42 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
 
 /* Font row */
 .font-row { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px; }
-.font-chip { padding:7px 12px;border:1px solid var(--line-strong);background:var(--paper-2);cursor:pointer;font-size:13px;transition:border-color .15s,background .15s;border-radius:var(--radius); }
-.font-chip.active { border-color:var(--yellow-deep);background:var(--paper); }
+.font-chip { padding:7px 12px;border:1px solid var(--line-strong);background:var(--paper-2);color:var(--ink);cursor:pointer;font-size:13px;transition:border-color .15s,background .15s,color .15s;border-radius:var(--radius); }
+.font-chip.active { border-color:var(--yellow-deep);background:var(--paper);color:var(--ink); }
 .font-chip:hover { border-color:var(--yellow-deep); }
+
+/* New-updates dot indicator */
+.nav-dot-wrap { position:relative;display:inline-flex;align-items:center; }
+.nav-dot {
+  position:absolute; top:-2px; right:-9px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--yellow); box-shadow:0 0 0 2px var(--paper);
+}
+.mob-menu-item .nav-dot { top:2px; right:auto; left:16px; }
+.mob-nav-btn .nav-dot { top:4px; right:calc(50% - 16px); box-shadow:0 0 0 2px var(--steel); }
+.update-card.is-new { position:relative; }
+.update-card.is-new h3::before {
+  content:""; display:inline-block; width:7px;height:7px;border-radius:50%;
+  background:var(--yellow); margin-right:8px; vertical-align:middle;
+}
+
+/* Background shapes editor */
+.bgfx-canvas-wrap { position:relative;width:100%;aspect-ratio:16/9;background:var(--paper);border:2px solid var(--line-strong);border-radius:var(--radius);overflow:hidden;touch-action:none; }
+.bgfx-canvas-wrap svg { width:100%;height:100%;display:block; }
+.bgfx-shape { cursor:move; }
+.bgfx-shape.selected { outline:none; }
+.bgfx-handle { cursor:pointer; }
+.bgfx-toolbar { display:flex;gap:8px;flex-wrap:wrap;margin-top:10px; }
+.bgfx-list { display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:160px;overflow-y:auto; }
+.bgfx-item { display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:var(--radius);font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-soft); }
+.bgfx-item.active { border-color:var(--yellow-deep);color:var(--ink); }
+.bgfx-item .bgfx-swatch { width:16px;height:16px;border-radius:3px;border:1px solid rgba(0,0,0,.15);flex-shrink:0; }
+.bgfx-item span.bgfx-name { flex:1; }
+.bgfx-item button { background:transparent;border:none;color:var(--ink-soft);cursor:pointer;font-size:14px;padding:2px 6px;line-height:1; }
+.bgfx-item button:hover { color:#e06b5a; }
+.bgfx-props { display:flex;flex-direction:column;gap:10px;margin-top:12px; }
+.bgfx-props .slider-row label { flex: 0 0 110px; }
+.bgfx-hint { font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-soft);margin-top:8px;line-height:1.6; }
 
 /* Saved customs */
 .saved-themes { display:flex;flex-direction:column;gap:8px; }
@@ -892,6 +931,8 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
 </head>
 <body>
 
+<div id="bgShapesLayer"><svg id="bgShapesRender" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice"></svg></div>
+
 <svg style="display:none" aria-hidden="true">
   <symbol id="ic-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.1 2.1-2-2z"/></symbol>
   <symbol id="ic-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/></symbol>
@@ -957,8 +998,8 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
       <button data-page="staff">Стафф</button>
       <button data-page="support">Спонсоры</button>
       <button data-page="gallery">Галерея</button>
-      <button data-page="updates">Обновления</button>
-      <button data-page="announcements">Объявления</button>
+      <button data-page="updates"><span class="nav-dot-wrap">Обновления<span class="nav-dot" id="dotUpdatesDesktop" hidden></span></span></button>
+      <button data-page="announcements"><span class="nav-dot-wrap">Объявления<span class="nav-dot" id="dotAnnounceDesktop" hidden></span></span></button>
     </nav>
     <div class="more-dropdown" id="moreDropdown">
       <button class="icon-link-btn" id="moreDropdownBtn" aria-label="Ещё" aria-haspopup="true" aria-expanded="false"><svg class="ic ic-lg"><use href="#ic-more"/></svg></button>
@@ -985,8 +1026,8 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <button class="mob-menu-item" data-page="staff"><svg><use href="#ic-crown"/></svg><span>Стафф</span></button>
   <button class="mob-menu-item" data-page="support"><svg><use href="#ic-badge"/></svg><span>Спонсоры</span></button>
   <button class="mob-menu-item" data-page="gallery"><svg><use href="#ic-brush"/></svg><span>Галерея</span></button>
-  <button class="mob-menu-item" data-page="updates"><svg><use href="#ic-megaphone"/></svg><span>Обновления</span></button>
-  <button class="mob-menu-item" data-page="announcements"><svg><use href="#ic-inbox"/></svg><span>Объявления</span></button>
+  <button class="mob-menu-item" data-page="updates"><svg><use href="#ic-megaphone"/></svg><span>Обновления</span><span class="nav-dot" id="dotUpdatesMobMenu" hidden></span></button>
+  <button class="mob-menu-item" data-page="announcements"><svg><use href="#ic-inbox"/></svg><span>Объявления</span><span class="nav-dot" id="dotAnnounceMobMenu" hidden></span></button>
   <button class="mob-menu-item" id="mobileSettingsBtn" style="color:var(--yellow);"><svg><use href="#ic-gear"/></svg><span>Настройки</span></button>
   <div style="padding:12px 24px;display:flex;flex-direction:column;gap:10px;">
     <a class="btn btn-primary" href="https://discord.gg/hwzNAGqSbf" target="_blank" rel="noopener" style="display:block;text-align:center;">Вступить в ИСР</a>
@@ -1016,6 +1057,7 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   <button class="mob-nav-btn" id="moreNavBtn">
     <svg viewBox="0 0 24 24"><use href="#ic-more"/></svg>
     <span class="mob-label">Ещё</span>
+    <span class="nav-dot" id="dotMoreBottomNav" hidden></span>
   </button>
 </nav>
 
@@ -1085,6 +1127,7 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
       <div class="tl-item reveal"><div class="tl-date">01.07.2026</div><div><h3>Выборы и их последствия</h3><p>Состоялись выборы. Глава партии Соц-Дем ИСР повёл себя неадекватно — получил пожизненный срок в ИСР.</p></div></div>
       <div class="tl-item reveal"><div class="tl-date">С июля 2026</div><div><h3>Правление РосПил</h3><p>После выборов партия РосПил берёт управление сервером в свои руки.</p></div></div>
       <div class="tl-item reveal"><div class="tl-date">10.07.2026</div><div><h3>Лимитированные роли</h3><p>Гречка создаёт лимитированные роли для тех, кто помогал серверу.</p></div></div>
+      <div class="tl-item reveal"><div class="tl-date">26.08.2026</div><div><h3>Война</h3><p>Гречка вместе с T.S.M. вступают в войну против врагов.</p></div></div>
     </div>
   </section>
 
@@ -1309,8 +1352,8 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
       <button onclick="showPage('staff')">Стафф</button>
       <button onclick="showPage('support')">Спонсоры</button>
       <button onclick="showPage('gallery')">Галерея</button>
-      <button onclick="showPage('updates')">Обновления</button>
-      <button onclick="showPage('announcements')">Объявления</button>
+      <button onclick="showPage('updates')"><span class="nav-dot-wrap">Обновления<span class="nav-dot" id="dotUpdatesFooter" hidden></span></span></button>
+      <button onclick="showPage('announcements')"><span class="nav-dot-wrap">Объявления<span class="nav-dot" id="dotAnnounceFooter" hidden></span></span></button>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <a class="icon-link-btn icon-youtube" href="https://www.youtube.com/@industrialserverrabotyag" target="_blank" rel="noopener" aria-label="YouTube ИСР"><svg class="ic ic-lg"><use href="#ic-youtube"/></svg></a>
@@ -1331,12 +1374,15 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
     <div class="console-scanlines"></div>
     <div class="console-header">
       <span class="console-title"><svg class="ic ic-sm"><use href="#ic-tools"/></svg> <span>ПУЛЬТ УПРАВЛЕНИЯ ИСР</span></span>
-      <button class="console-close" onclick="closeConsole()">×</button>
+      <span style="display:flex;align-items:center;gap:10px;">
+        <button class="console-close" id="consoleClearBtn" title="Очистить" style="font-size:13px;">⌫</button>
+        <button class="console-close" onclick="closeConsole()">×</button>
+      </span>
     </div>
     <div class="console-output" id="consoleOutput"></div>
     <div class="console-input-row">
       <span class="console-prompt">work@isr:~$</span>
-      <input type="text" id="consoleInput" class="console-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="help">
+      <input type="text" id="consoleInput" class="console-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="help (Tab — автодополнение)">
     </div>
   </div>
 </div>
@@ -1353,6 +1399,7 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
       <button class="stab" data-stab="custom">✏️ Редактор</button>
       <button class="stab" data-stab="saved">💾 Мои темы</button>
       <button class="stab" data-stab="layout">📐 Интерфейс</button>
+      <button class="stab" data-stab="bgfx">⬡ Фон</button>
     </div>
     <div class="settings-body">
 
@@ -1438,6 +1485,7 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
           <button class="font-chip" data-font="'Space Mono', monospace" style="font-family:'Space Mono',monospace">Space Mono</button>
           <button class="font-chip" data-font="system-ui, sans-serif" style="font-family:system-ui,sans-serif">Системный</button>
         </div>
+        <button class="stt-btn" id="fontAutoBtn" style="margin-top:8px;">↺ Подбирать шрифт автоматически под тему</button>
         <div class="sg-label" style="margin-top:16px;">Полосатый баннер</div>
         <div class="seg-group" id="stripeGroup">
           <button class="seg-btn active" data-value="on">Показать</button>
@@ -1450,6 +1498,63 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
         </div>
         <div class="sg-label" style="margin-top:20px;">Сброс</div>
         <button class="btn-danger" id="resetLayoutBtn">↩ Сбросить всё к умолчаниям</button>
+      </div>
+
+      <!-- BACKGROUND SHAPES EDITOR TAB -->
+      <div class="stab-panel" id="stab-bgfx">
+        <div class="sg-label">Редактор фона</div>
+        <div class="bgfx-canvas-wrap" id="bgfxCanvasWrap">
+          <svg id="bgfxSvg" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <div class="bgfx-toolbar">
+          <button class="btn-outline" id="bgfxAddCircle"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-shuffle"/></svg> Круг</button>
+          <button class="btn-outline" id="bgfxAddSquare"><svg class="ic ic-sm" style="vertical-align:middle"><use href="#ic-shuffle"/></svg> Квадрат</button>
+          <button class="btn-danger" id="bgfxDeleteSelected">🗑 Удалить фигуру</button>
+        </div>
+
+        <div class="bgfx-props" id="bgfxProps" style="display:none;">
+          <div class="sg-label" style="margin-top:8px;">Свойства фигуры</div>
+          <div class="slider-row">
+            <label>Цвет</label>
+            <input type="color" id="bgfxColor" value="#F5C400" style="width:40px;height:32px;border:2px solid var(--line-strong);background:none;padding:2px;cursor:pointer;border-radius:4px;">
+            <span class="sv" id="bgfxColorVal">#F5C400</span>
+          </div>
+          <div class="slider-row">
+            <label>Размер</label>
+            <input type="range" id="bgfxSize" min="10" max="400" value="120" step="1">
+            <span class="sv" id="bgfxSizeVal">120px</span>
+          </div>
+          <div class="slider-row">
+            <label>Поворот</label>
+            <input type="range" id="bgfxRotate" min="0" max="360" value="0" step="1">
+            <span class="sv" id="bgfxRotateVal">0°</span>
+          </div>
+          <div class="slider-row">
+            <label>Прозрачность</label>
+            <input type="range" id="bgfxOpacity" min="0" max="100" value="35" step="1">
+            <span class="sv" id="bgfxOpacityVal">35%</span>
+          </div>
+          <div class="slider-row">
+            <label>Размытие</label>
+            <input type="range" id="bgfxBlur" min="0" max="40" value="0" step="1">
+            <span class="sv" id="bgfxBlurVal">0px</span>
+          </div>
+        </div>
+
+        <div class="sg-label" style="margin-top:14px;">Фигуры на фоне</div>
+        <div class="bgfx-list" id="bgfxList">
+          <div class="update-state">Фигур пока нет — добавьте круг или квадрат</div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+          <div class="seg-group" id="bgfxEnableGroup" style="flex:1;">
+            <button class="seg-btn active" data-value="on">Фон включён</button>
+            <button class="seg-btn" data-value="off">Фон выключен</button>
+          </div>
+        </div>
+        <button class="btn-danger" id="bgfxClearBtn" style="margin-top:10px;">🗑 Очистить весь фон</button>
+
+        <div class="bgfx-hint">Перетаскивайте фигуры прямо на превью, чтобы менять положение. Клик по фигуре выбирает её для редактирования свойств справа. Фон и его фигуры входят в код темы — при экспорте они передаются вместе с цветами.</div>
       </div>
 
     </div>
@@ -1543,6 +1648,7 @@ function showPage(id){
   window.scrollTo({top:0,behavior:'instant'});
   document.querySelectorAll('#'+id+' .reveal, #'+id+' .stagger').forEach(el=>io.observe(el));
   setTimeout(forceRevealVisible, 60);
+  if(id==='updates' || id==='announcements') markPageSeen(id);
 }
 allTabs.forEach(t=>{ if(t.dataset.page) t.addEventListener('click',()=>showPage(t.dataset.page)); });
 
@@ -1641,15 +1747,14 @@ function showToast(msg,dur=2200){
    THEME SYSTEM
 ============================================================ */
 const BUILT_IN_THEMES = [
-  { id:'light', name:'Светлая', vars:{ '--paper':'#F3F0E6','--paper-2':'#EAE6D8','--ink':'#171614','--ink-soft':'#5A5750','--yellow':'#F5C400','--yellow-deep':'#B8790A','--steel':'#1E1D18','--steel-2':'#2B2A23','--line':'#DBD6C6','--line-strong':'#171614','--steel-text':'#EAE6D8','--steel-text-dim':'#B0AC9E' }},
-  { id:'dark',  name:'Тёмная',  vars:{ '--paper':'#18170F','--paper-2':'#211F16','--ink':'#EDEAE0','--ink-soft':'#A19C8F','--yellow':'#F5C400','--yellow-deep':'#B8790A','--steel':'#0D0D07','--steel-2':'#1A1910','--line':'#33312A','--line-strong':'#3D3A30','--steel-text':'#EAE6D8','--steel-text-dim':'#B0AC9E' }},
-  { id:'midnight', name:'Полночь', vars:{ '--paper':'#0D1117','--paper-2':'#161B22','--ink':'#E6EDF3','--ink-soft':'#8B949E','--yellow':'#58A6FF','--yellow-deep':'#1F6FEB','--steel':'#010409','--steel-2':'#0D1117','--line':'#21262D','--line-strong':'#30363D','--steel-text':'#E6EDF3','--steel-text-dim':'#8B949E' }},
-  { id:'forest',   name:'Лес',     vars:{ '--paper':'#F0F4EE','--paper-2':'#E3EBE0','--ink':'#1C2B1A','--ink-soft':'#4A6741','--yellow':'#6BAE4F','--yellow-deep':'#3D7A2E','--steel':'#1C2B1A','--steel-2':'#243522','--line':'#C5D9BF','--line-strong':'#1C2B1A','--steel-text':'#E8F0E5','--steel-text-dim':'#9AB892' }},
-  { id:'rose',     name:'Роза',    vars:{ '--paper':'#FFF5F7','--paper-2':'#FFE8ED','--ink':'#2D1A1E','--ink-soft':'#7A4A53','--yellow':'#E8547A','--yellow-deep':'#C0395A','--steel':'#2D1A1E','--steel-2':'#3D2228','--line':'#F5C5CF','--line-strong':'#2D1A1E','--steel-text':'#FFE8ED','--steel-text-dim':'#D4A0AA' }},
-  { id:'slate',    name:'Сланец',  vars:{ '--paper':'#F8F9FA','--paper-2':'#E9ECEF','--ink':'#212529','--ink-soft':'#6C757D','--yellow':'#6C63FF','--yellow-deep':'#4B42D6','--steel':'#212529','--steel-2':'#343A40','--line':'#DEE2E6','--line-strong':'#212529','--steel-text':'#F8F9FA','--steel-text-dim':'#ADB5BD' }},
-  { id:'tree',    name:'Дерево',  vars:{ '--paper':'#242518','--paper-2':'#221e16','--ink':'#ffd885','--ink-soft':'#bf9c73','--yellow':'#736b35','--yellow-deep':'#927116','--steel':'#1f1f04','--steel-2':'#30311c','--line':'#473400','--line-strong':'#473d0b','--steel-text':'#806400','--steel-text-dim':'#fed57c' }},
-  { id:'bloody',    name:'Кровь',  vars:{ '--paper':'#220707','--paper-2':'#610000','--ink':'#8f0000','--ink-soft':'#ff5757','--yellow':'#ff2e2e','--yellow-deep':'#ff0000','--steel':'#570000','--steel-2':'#940000','--line':'#970c0c','--line-strong':'#a80000','--steel-text':'#ff3d3d','--steel-text-dim':'#ff0000' }},
-  { id:'hevcostume',    name:'Hev костюм Гордона Фримена',  vars:{ '--paper':'#000000','--paper-2':'#232015','--ink':'#e66a05','--ink-soft':'#f07400','--yellow':'#ffcc00','--yellow-deep':'#ffa200','--steel':'#0a040b','--steel-2':'#060307','--line':'#ff7b00','--line-strong':'#ff5900','--steel-text':'#ffc800','--steel-text-dim':'#ffc800' }},
+  { id:'light', name:'Светлая', font:"'IBM Plex Sans', sans-serif", vars:{ '--paper':'#F3F0E6','--paper-2':'#EAE6D8','--ink':'#171614','--ink-soft':'#5A5750','--yellow':'#F5C400','--yellow-deep':'#B8790A','--steel':'#1E1D18','--steel-2':'#2B2A23','--line':'#DBD6C6','--line-strong':'#171614','--steel-text':'#EAE6D8','--steel-text-dim':'#B0AC9E' }},
+  { id:'dark',  name:'Тёмная',  font:"'IBM Plex Sans', sans-serif", vars:{ '--paper':'#18170F','--paper-2':'#211F16','--ink':'#EDEAE0','--ink-soft':'#A19C8F','--yellow':'#F5C400','--yellow-deep':'#B8790A','--steel':'#0D0D07','--steel-2':'#1A1910','--line':'#33312A','--line-strong':'#3D3A30','--steel-text':'#EAE6D8','--steel-text-dim':'#B0AC9E' }},
+  { id:'midnight', name:'Полночь', font:"'Space Mono', monospace", vars:{ '--paper':'#0D1117','--paper-2':'#161B22','--ink':'#E6EDF3','--ink-soft':'#8B949E','--yellow':'#58A6FF','--yellow-deep':'#1F6FEB','--steel':'#010409','--steel-2':'#0D1117','--line':'#21262D','--line-strong':'#30363D','--steel-text':'#E6EDF3','--steel-text-dim':'#8B949E' }},
+  { id:'forest',   name:'Лес',     font:"'IBM Plex Sans', sans-serif", vars:{ '--paper':'#F0F4EE','--paper-2':'#E3EBE0','--ink':'#1C2B1A','--ink-soft':'#4A6741','--yellow':'#6BAE4F','--yellow-deep':'#3D7A2E','--steel':'#1C2B1A','--steel-2':'#243522','--line':'#C5D9BF','--line-strong':'#1C2B1A','--steel-text':'#E8F0E5','--steel-text-dim':'#9AB892' }},
+  { id:'rose',     name:'Роза',    font:"'Oswald', sans-serif", vars:{ '--paper':'#FFF5F7','--paper-2':'#FFE8ED','--ink':'#2D1A1E','--ink-soft':'#7A4A53','--yellow':'#E8547A','--yellow-deep':'#C0395A','--steel':'#2D1A1E','--steel-2':'#3D2228','--line':'#F5C5CF','--line-strong':'#2D1A1E','--steel-text':'#FFE8ED','--steel-text-dim':'#D4A0AA' }},
+  { id:'slate',    name:'Сланец',  font:"system-ui, sans-serif", vars:{ '--paper':'#F8F9FA','--paper-2':'#E9ECEF','--ink':'#212529','--ink-soft':'#6C757D','--yellow':'#6C63FF','--yellow-deep':'#4B42D6','--steel':'#212529','--steel-2':'#343A40','--line':'#DEE2E6','--line-strong':'#212529','--steel-text':'#F8F9FA','--steel-text-dim':'#ADB5BD' }},
+  { id:'tree',    name:'Дерево',  font:"'IBM Plex Sans', sans-serif", vars:{ '--paper':'#242518','--paper-2':'#221e16','--ink':'#ffd885','--ink-soft':'#bf9c73','--yellow':'#736b35','--yellow-deep':'#927116','--steel':'#1f1f04','--steel-2':'#30311c','--line':'#473400','--line-strong':'#473d0b','--steel-text':'#806400','--steel-text-dim':'#fed57c' }},
+  { id:'bloody',    name:'Кровь',  font:"'Oswald', sans-serif", vars:{ '--paper':'#220707','--paper-2':'#610000','--ink':'#8f0000','--ink-soft':'#ff5757','--yellow':'#ff2e2e','--yellow-deep':'#ff0000','--steel':'#570000','--steel-2':'#940000','--line':'#970c0c','--line-strong':'#a80000','--steel-text':'#ff3d3d','--steel-text-dim':'#ff0000' }},
 ];
 
 const COLOR_FIELDS = [
@@ -1666,6 +1771,52 @@ const COLOR_FIELDS = [
   { var:'--steel-text', label:'Текст в шапке' },
   { var:'--steel-text-dim', label:'Текст в шапке (dim)' },
 ];
+
+/* Список шрифтов интерфейса, используемый для компактного кодирования темы (ISR2-) —
+   индекс шрифта в этом списке занимает всего 2 бита вместо полной строки. */
+const THEME_CODE_FONTS = [
+  "'IBM Plex Sans', sans-serif",
+  "'Oswald', sans-serif",
+  "'Space Mono', monospace",
+  "system-ui, sans-serif"
+];
+
+/* Дополнительные "официальные" темы, загружаемые из json/themesFILE.
+   Формат файла — JSON-массив объектов { id, name, code } или { id, name, vars, font }.
+   Если указан code (короткий ISR2-код темы), цвета/шрифт/layout берутся из него —
+   это позволяет добавлять новые официальные темы, просто вставив код в файл в репозитории,
+   без необходимости переписывать вручную все 12 цветов. */
+let EXTRA_THEMES = [];
+function allBuiltInThemes(){ return BUILT_IN_THEMES.concat(EXTRA_THEMES); }
+
+function loadExtraThemes(){
+  fetch('json/themesFILE', {cache:'no-store'})
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(text=>{
+      const tr = (text||'').trim();
+      if(!tr) return; // пустой файл — дополнительных тем нет
+      const raw = JSON.parse(tr);
+      if(!Array.isArray(raw)) return;
+      const parsed = [];
+      raw.forEach(entry=>{
+        if(!entry || !entry.id || !entry.name) return;
+        if(allBuiltInThemes().some(t=>t.id===entry.id) || parsed.some(t=>t.id===entry.id)) return; // без дублей id
+        if(entry.code){
+          const decoded = decodeThemeCode(entry.code);
+          if(!decoded) return;
+          parsed.push({ id: entry.id, name: entry.name, font: (decoded.layout && decoded.layout.font) || THEME_CODE_FONTS[0], vars: decoded.vars });
+        } else if(entry.vars){
+          parsed.push({ id: entry.id, name: entry.name, font: entry.font || THEME_CODE_FONTS[0], vars: entry.vars });
+        }
+      });
+      if(!parsed.length) return;
+      EXTRA_THEMES = parsed;
+      buildThemePresets();
+      /* Если активная тема — одна из свежезагруженных, применяем её сразу же после загрузки */
+      if(EXTRA_THEMES.some(t=>t.id===activeThemeId)) applyBuiltInTheme(activeThemeId);
+    })
+    .catch(()=>{ /* файла нет или он битый — молча остаёмся только со встроенными темами */ });
+}
 
 let activeThemeId = sGet('isr-theme-id') || 'light';
 let baseMode = sGet('isr-base-mode') || 'system';
@@ -1698,7 +1849,7 @@ function clearCustomVarsFromDOM(){
 }
 
 function applyBuiltInTheme(id){
-  const th = BUILT_IN_THEMES.find(t=>t.id===id);
+  const th = allBuiltInThemes().find(t=>t.id===id);
   if(!th) return;
   document.documentElement.removeAttribute('data-theme');
   clearCustomVarsFromDOM();
@@ -1707,9 +1858,10 @@ function applyBuiltInTheme(id){
   sSet('isr-theme-id', id);
   updatePresetUI();
   syncCustomEditorInputs(th.vars);
+  applyThemeFont(th.font);
 }
 
-function applyCustomTheme(vars, id='custom'){
+function applyCustomTheme(vars, id='custom', opts={}){
   document.documentElement.removeAttribute('data-theme');
   applyVarsToDOM(vars);
   customThemeVars = {...vars};
@@ -1717,6 +1869,39 @@ function applyCustomTheme(vars, id='custom'){
   sSet('isr-theme-id', id);
   sSetJSON('isr-custom-vars', vars);
   updatePresetUI();
+  if(opts.recalcFont!==false){
+    applyThemeFont(guessFontForVars(vars));
+  }
+}
+
+/* Подбор и применение шрифта, соответствующего теме.
+   Если пользователь вручную закрепил шрифт (isr-font-locked), тема его не трогает. */
+function applyThemeFont(font){
+  if(!font) return;
+  if(sGet('isr-font-locked')==='1') return;
+  if(typeof layoutFont==='undefined') return;
+  layoutFont = font;
+  sSet('isr-font', font);
+  document.documentElement.style.setProperty('--font-ui', font);
+  document.body.style.fontFamily = font;
+  if(typeof syncLayoutUI==='function') syncLayoutUI();
+}
+
+/* Эвристика подбора шрифта для произвольных/случайных тем на основе яркости и оттенка акцента */
+function guessFontForVars(vars){
+  try{
+    const accent = cssColorToHex(vars['--yellow']||'#F5C400');
+    const [r,g,b] = hexToRGB(accent);
+    const bg = cssColorToHex(vars['--paper']||'#FFFFFF');
+    const [br,bgc,bb] = hexToRGB(bg);
+    const bgLum = br*.299+bgc*.587+bb*.114;
+    const isBluish = b > r && b > g;
+    const isReddish = r > g && r > b;
+    if(isBluish) return "'Space Mono', monospace";
+    if(isReddish) return "'Oswald', sans-serif";
+    if(bgLum < 60) return "'Space Mono', monospace";
+    return "'IBM Plex Sans', sans-serif";
+  } catch(e){ return "'IBM Plex Sans', sans-serif"; }
 }
 
 function applySavedTheme(name){
@@ -1724,6 +1909,9 @@ function applySavedTheme(name){
   const th = saved.find(t=>t.name===name);
   if(!th) return;
   applyCustomTheme(th.vars, 'saved:'+name);
+  if(th.font){
+    if(sGet('isr-font-locked')!=='1') applyThemeFont(th.font);
+  }
   showToast('Тема «'+name+'» применена');
 }
 
@@ -1744,7 +1932,7 @@ function initTheme(){
   if(activeThemeId==='custom'){
     applyCustomTheme(customThemeVars,'custom'); return;
   }
-  const builtIn = BUILT_IN_THEMES.find(t=>t.id===activeThemeId);
+  const builtIn = allBuiltInThemes().find(t=>t.id===activeThemeId);
   if(builtIn){ applyBuiltInTheme(activeThemeId); return; }
   applyBuiltInTheme(resolveBaseMode());
 }
@@ -1761,7 +1949,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>
 function buildThemePresets(){
   const container = document.getElementById('themePresets');
   container.innerHTML = '';
-  BUILT_IN_THEMES.forEach(th=>{
+  allBuiltInThemes().forEach(th=>{
     const btn = document.createElement('button');
     btn.className = 'theme-preset'+(activeThemeId===th.id?' active':'');
     btn.dataset.id = th.id;
@@ -1790,9 +1978,13 @@ function updatePresetUI(){
 function buildCustomEditor(){
   const container = document.getElementById('customEditor');
   container.innerHTML = '';
+  /* Синхронизируем рабочую копию с тем, что реально сейчас на экране —
+     иначе customThemeVars может тянуть смесь значений от предыдущей темы. */
+  const liveVars = {};
+  COLOR_FIELDS.forEach(f=>{ liveVars[f.var] = cssColorToHex(getComputedVar(f.var) || '#888888'); });
+  customThemeVars = liveVars;
   COLOR_FIELDS.forEach(f=>{
-    const currentVal = getComputedVar(f.var) || '#888888';
-    const hex = cssColorToHex(currentVal);
+    const hex = customThemeVars[f.var];
     const row = document.createElement('div');
     row.className = 'color-row';
     row.innerHTML = `
@@ -1805,9 +1997,10 @@ function buildCustomEditor(){
     inp.addEventListener('input',()=>{
       valSpan.textContent = inp.value;
       customThemeVars[f.var] = inp.value;
-      document.documentElement.style.setProperty(f.var, inp.value);
-      if(f.var==='--yellow') document.documentElement.style.setProperty('--accent',inp.value);
-      if(f.var==='--yellow-deep') document.documentElement.style.setProperty('--accent-deep',inp.value);
+      /* Правка любого поля сразу переводит активную тему в режим "custom",
+         иначе код темы и localStorage продолжают ссылаться на встроенную тему
+         (или на старую сохранённую), а правки нигде не фиксируются. */
+      applyCustomTheme({...customThemeVars}, 'custom', {recalcFont:false});
     });
     container.appendChild(row);
   });
@@ -1856,6 +2049,7 @@ function openSettings(){
   buildSavedThemes();
   updatePresetUI();
   syncLayoutUI();
+  renderBgfxEditor();
   document.getElementById('settingsOverlay').style.display='flex';
 }
 function closeSettings(){
@@ -1872,6 +2066,9 @@ document.querySelectorAll('.stab').forEach(tab=>{
     tab.classList.add('active');
     const panel=document.getElementById('stab-'+tab.dataset.stab);
     if(panel) panel.classList.add('active');
+    /* Редактор всегда должен показывать актуальные, реально применённые цвета —
+       иначе правки одного поля мешаются с устаревшими значениями других полей. */
+    if(tab.dataset.stab==='custom') buildCustomEditor();
   });
 });
 
@@ -1899,30 +2096,138 @@ document.getElementById('saveCustomBtn').addEventListener('click',()=>{
   if(!name){ showToast('Введите название темы'); return; }
   let saved=sGetJSON('isr-saved-themes',[]);
   saved=saved.filter(t=>t.name!==name);
-  saved.push({name, vars:{...customThemeVars}});
+  saved.push({name, vars:{...customThemeVars}, font: (typeof layoutFont!=='undefined'?layoutFont:null)});
   sSetJSON('isr-saved-themes',saved);
   buildSavedThemes();
   showToast('Тема «'+name+'» сохранена!');
 });
 
-/* Theme share code (без сервера, всё зашито в код) */
-function encodeThemeCode(vars){
-  const compact = COLOR_FIELDS.map(f => vars[f.var] || '');
-  const json = JSON.stringify(compact);
-  const b64 = btoa(unescape(encodeURIComponent(json)));
-  return 'ISR1-' + b64;
+/* Theme share code (без сервера, всё зашито в код).
+   ISR2-формат — компактный бинарный: цвета как RGB-байты, layout упакован в биты,
+   фигуры фона — фиксированные байтовые поля. Гораздо короче старого JSON-формата.
+   ISR1- (только цвета, старейший формат) по-прежнему читается при импорте для обратной совместимости. */
+function clampByte(v){ return Math.max(0, Math.min(255, Math.round(v))); }
+function pushU16(arr, v){ const x = Math.max(0, Math.min(65535, Math.round(v))); arr.push((x>>8)&0xFF, x&0xFF); }
+function readU16(buf, i){ return (buf[i]<<8) | buf[i+1]; }
+
+function bytesToBase64Url(bytes){
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
+function base64UrlToBytes(str){
+  let b64 = str.replace(/-/g,'+').replace(/_/g,'/');
+  while(b64.length % 4) b64 += '=';
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+function encodeThemeCode(vars){
+  const bytes = [];
+
+  /* 12 цветов × 3 байта RGB = 36 байт */
+  COLOR_FIELDS.forEach(f=>{
+    const [r,g,b] = hexToRGB(cssColorToHex(vars[f.var] || '#888888'));
+    bytes.push(r,g,b);
+  });
+
+  const radius = (typeof layoutRadius!=='undefined') ? layoutRadius : 0;
+  const scale = (typeof layoutScale!=='undefined') ? layoutScale : 100;
+  const font = (typeof layoutFont!=='undefined') ? layoutFont : THEME_CODE_FONTS[0];
+  const fontLocked = sGet('isr-font-locked')==='1';
+  const stripe = (typeof layoutStripe!=='undefined') ? layoutStripe : 'on';
+  const noise = (typeof layoutNoise!=='undefined') ? layoutNoise : 'on';
+  const bgEnabled = (typeof bgfxEnabled!=='undefined') ? bgfxEnabled : 'on';
+  const shapes = (typeof bgfxShapes!=='undefined') ? bgfxShapes : [];
+
+  bytes.push(clampByte(radius));
+  bytes.push(clampByte(scale));
+
+  let fontIdx = THEME_CODE_FONTS.indexOf(font);
+  if(fontIdx < 0) fontIdx = 0;
+  let flags = 0;
+  flags |= (fontIdx & 0x3);
+  flags |= (fontLocked ? 1:0) << 2;
+  flags |= (stripe==='on' ? 1:0) << 3;
+  flags |= (noise==='on' ? 1:0) << 4;
+  flags |= (bgEnabled==='on' ? 1:0) << 5;
+  bytes.push(flags);
+
+  bytes.push(clampByte(shapes.length));
+  shapes.forEach(s=>{
+    bytes.push(s.type==='circle' ? 0 : 1);
+    pushU16(bytes, s.x);
+    pushU16(bytes, s.y);
+    pushU16(bytes, s.size);
+    pushU16(bytes, s.rotate);
+    bytes.push(clampByte(s.opacity));
+    bytes.push(clampByte(s.blur));
+    const [r,g,b] = hexToRGB(cssColorToHex(s.color || '#F5C400'));
+    bytes.push(r,g,b);
+  });
+
+  return 'ISR2-' + bytesToBase64Url(bytes);
+}
+
+function decodeThemeCodeV2(b64part){
+  try {
+    const buf = base64UrlToBytes(b64part);
+    let i = 0;
+    const vars = {};
+    COLOR_FIELDS.forEach(f=>{
+      vars[f.var] = rgbToHex(buf[i], buf[i+1], buf[i+2]);
+      i += 3;
+    });
+    const radius = buf[i++];
+    const scale = buf[i++];
+    const flags = buf[i++];
+    const fontIdx = flags & 0x3;
+    const fontLocked = !!((flags>>2) & 1);
+    const stripe = ((flags>>3) & 1) ? 'on' : 'off';
+    const noise = ((flags>>4) & 1) ? 'on' : 'off';
+    const bgEnabled = ((flags>>5) & 1) ? 'on' : 'off';
+    const font = THEME_CODE_FONTS[fontIdx] || THEME_CODE_FONTS[0];
+
+    const shapeCount = buf[i++];
+    const shapes = [];
+    for(let s=0; s<shapeCount; s++){
+      const type = buf[i++]===0 ? 'circle' : 'square';
+      const x = readU16(buf, i); i+=2;
+      const y = readU16(buf, i); i+=2;
+      const size = readU16(buf, i); i+=2;
+      const rotate = readU16(buf, i); i+=2;
+      const opacity = buf[i++];
+      const blur = buf[i++];
+      const color = rgbToHex(buf[i], buf[i+1], buf[i+2]); i+=3;
+      shapes.push({ id: bgfxUid(), type, x, y, size, rotate, opacity, blur, color });
+    }
+
+    return {
+      vars,
+      layout: { radius, scale, font, fontLocked, stripe, noise },
+      bg: { enabled: bgEnabled, shapes }
+    };
+  } catch(e){ return null; }
+}
+
 function decodeThemeCode(code){
   const tr = (code||'').trim();
-  if(!tr.startsWith('ISR1-')) return null;
-  try {
-    const json = decodeURIComponent(escape(atob(tr.slice(5))));
-    const compact = JSON.parse(json);
-    if(!Array.isArray(compact) || compact.length !== COLOR_FIELDS.length) return null;
-    const vars = {};
-    COLOR_FIELDS.forEach((f,i) => { if(compact[i]) vars[f.var] = compact[i]; });
-    return vars;
-  } catch(e) { return null; }
+  if(tr.startsWith('ISR2-')){
+    return decodeThemeCodeV2(tr.slice(5));
+  }
+  if(tr.startsWith('ISR1-')){
+    try {
+      const json = decodeURIComponent(escape(atob(tr.slice(5))));
+      const compact = JSON.parse(json);
+      if(!Array.isArray(compact) || compact.length !== COLOR_FIELDS.length) return null;
+      const vars = {};
+      COLOR_FIELDS.forEach((f,i) => { if(compact[i]) vars[f.var] = compact[i]; });
+      return { vars, layout:null, bg:null };
+    } catch(e) { return null; }
+  }
+  return null;
 }
 document.getElementById('genThemeCodeBtn').addEventListener('click',()=>{
   const code = encodeThemeCode(customThemeVars);
@@ -1930,18 +2235,47 @@ document.getElementById('genThemeCodeBtn').addEventListener('click',()=>{
   out.value = code;
   out.select();
   if(navigator.clipboard){
-    navigator.clipboard.writeText(code).then(()=>showToast('Код темы скопирован!')).catch(()=>showToast('Код создан — скопируйте вручную'));
+    navigator.clipboard.writeText(code).then(()=>showToast('Код темы скопирован! (включает интерфейс и фон)')).catch(()=>showToast('Код создан — скопируйте вручную'));
   } else {
     showToast('Код создан — скопируйте вручную');
   }
 });
 document.getElementById('importThemeCodeBtn').addEventListener('click',()=>{
   const code = document.getElementById('themeCodeIn').value;
-  const vars = decodeThemeCode(code);
-  if(!vars){ showToast('Код темы недействителен'); return; }
+  const decoded = decodeThemeCode(code);
+  if(!decoded){ showToast('Код темы недействителен'); return; }
+  const { vars, layout, bg } = decoded;
   customThemeVars = {...vars};
   applyCustomTheme(vars,'custom');
   syncCustomEditorInputs(vars);
+
+  if(layout){
+    layoutRadius = layout.radius ?? 0;
+    layoutScale = layout.scale ?? 100;
+    layoutStripe = layout.stripe || 'on';
+    layoutNoise = layout.noise || 'on';
+    sSet('isr-radius', layoutRadius);
+    sSet('isr-scale', layoutScale);
+    sSet('isr-stripe', layoutStripe);
+    sSet('isr-noise', layoutNoise);
+    if(layout.fontLocked && layout.font){
+      layoutFont = layout.font;
+      sSet('isr-font', layoutFont);
+      sSet('isr-font-locked','1');
+    } else {
+      sDel('isr-font-locked');
+    }
+    applyLayout();
+    syncLayoutUI();
+    if(!layout.fontLocked) applyThemeFont(guessFontForVars(vars));
+  }
+  if(bg){
+    bgfxEnabled = bg.enabled || 'on';
+    bgfxShapes = Array.isArray(bg.shapes) ? bg.shapes : [];
+    bgfxPersist();
+    renderBgfxEditor();
+    bgfxRenderLive();
+  }
   showToast('Тема применена из кода!');
 });
 
@@ -2029,10 +2363,18 @@ document.getElementById('scaleSlider').addEventListener('input',e=>{
 document.getElementById('fontPicker').addEventListener('click',e=>{
   const c=e.target.closest('.font-chip'); if(!c) return;
   layoutFont=c.dataset.font; sSet('isr-font',layoutFont);
+  sSet('isr-font-locked','1');
   document.documentElement.style.setProperty('--font-ui',layoutFont);
   document.body.style.fontFamily=layoutFont;
   document.querySelectorAll('#fontPicker .font-chip').forEach(f=>f.classList.toggle('active',f===c));
-  showToast('Шрифт изменён');
+  showToast('Шрифт изменён (закреплён вручную)');
+});
+document.getElementById('fontAutoBtn')?.addEventListener('click',()=>{
+  sDel('isr-font-locked');
+  const th = allBuiltInThemes().find(t=>t.id===activeThemeId);
+  const font = th ? th.font : guessFontForVars(customThemeVars);
+  applyThemeFont(font);
+  showToast('Шрифт снова подстраивается под тему');
 });
 document.getElementById('stripeGroup').addEventListener('click',e=>{
   const b=e.target.closest('.seg-btn'); if(!b) return;
@@ -2054,11 +2396,249 @@ document.getElementById('resetLayoutBtn').addEventListener('click',()=>{
 });
 
 /* ============================================================
+   BACKGROUND SHAPES EDITOR
+============================================================ */
+const BGFX_VB = { w:640, h:360 };
+let bgfxShapes = sGetJSON('isr-bgfx-shapes', []);
+let bgfxEnabled = sGet('isr-bgfx-enabled') || 'on';
+let bgfxSelectedId = null;
+
+function bgfxUid(){ return 's'+Math.random().toString(36).slice(2,9); }
+
+function bgfxDefaultShape(type){
+  return {
+    id: bgfxUid(),
+    type, // 'circle' | 'square'
+    x: BGFX_VB.w/2 + (Math.random()*140-70),
+    y: BGFX_VB.h/2 + (Math.random()*80-40),
+    size: 120,
+    rotate: 0,
+    opacity: 35,
+    blur: 0,
+    color: getComputedVar('--yellow') ? cssColorToHex(getComputedVar('--yellow')) : '#F5C400'
+  };
+}
+
+function bgfxShapeSvg(s, interactive){
+  const half = s.size/2;
+  const common = `data-id="${s.id}" class="bgfx-shape${s.id===bgfxSelectedId?' selected':''}" `
+    + `fill="${s.color}" opacity="${(s.opacity/100).toFixed(2)}" `
+    + `style="filter:${s.blur>0?`blur(${s.blur}px)`:'none'}" `
+    + `transform="translate(${s.x} ${s.y}) rotate(${s.rotate})"`;
+  let shape;
+  if(s.type==='circle'){
+    shape = `<circle ${common} cx="0" cy="0" r="${half}"></circle>`;
+  } else {
+    shape = `<rect ${common} x="${-half}" y="${-half}" width="${s.size}" height="${s.size}"></rect>`;
+  }
+  return shape;
+}
+
+function bgfxRenderPreview(){
+  const svg = document.getElementById('bgfxSvg');
+  if(!svg) return;
+  svg.innerHTML = bgfxShapes.map(s=>bgfxShapeSvg(s,true)).join('');
+}
+
+function bgfxRenderLive(){
+  const svg = document.getElementById('bgShapesRender');
+  const layer = document.getElementById('bgShapesLayer');
+  if(!svg || !layer) return;
+  if(bgfxEnabled==='off' || !bgfxShapes.length){
+    layer.style.display='none';
+    return;
+  }
+  layer.style.display='';
+  svg.innerHTML = bgfxShapes.map(s=>bgfxShapeSvg(s,false)).join('');
+}
+
+function bgfxRenderList(){
+  const list = document.getElementById('bgfxList');
+  if(!list) return;
+  if(!bgfxShapes.length){
+    list.innerHTML = '<div class="update-state">Фигур пока нет — добавьте круг или квадрат</div>';
+    return;
+  }
+  list.innerHTML = bgfxShapes.map((s,i)=>`
+    <div class="bgfx-item${s.id===bgfxSelectedId?' active':''}" data-id="${s.id}">
+      <span class="bgfx-swatch" style="background:${s.color}"></span>
+      <span class="bgfx-name">${s.type==='circle'?'Круг':'Квадрат'} #${i+1}</span>
+      <button data-del="${s.id}" title="Удалить">✕</button>
+    </div>`).join('');
+}
+
+function bgfxRenderProps(){
+  const props = document.getElementById('bgfxProps');
+  const s = bgfxShapes.find(x=>x.id===bgfxSelectedId);
+  if(!s){ if(props) props.style.display='none'; return; }
+  props.style.display='flex';
+  document.getElementById('bgfxColor').value = s.color;
+  document.getElementById('bgfxColorVal').textContent = s.color;
+  document.getElementById('bgfxSize').value = s.size;
+  document.getElementById('bgfxSizeVal').textContent = s.size+'px';
+  document.getElementById('bgfxRotate').value = s.rotate;
+  document.getElementById('bgfxRotateVal').textContent = s.rotate+'°';
+  document.getElementById('bgfxOpacity').value = s.opacity;
+  document.getElementById('bgfxOpacityVal').textContent = s.opacity+'%';
+  document.getElementById('bgfxBlur').value = s.blur;
+  document.getElementById('bgfxBlurVal').textContent = s.blur+'px';
+}
+
+function bgfxPersist(){
+  sSetJSON('isr-bgfx-shapes', bgfxShapes);
+  sSet('isr-bgfx-enabled', bgfxEnabled);
+}
+
+function bgfxSelect(id){
+  bgfxSelectedId = id;
+  bgfxRenderPreview();
+  bgfxRenderList();
+  bgfxRenderProps();
+}
+
+function renderBgfxEditor(){
+  bgfxRenderPreview();
+  bgfxRenderList();
+  bgfxRenderProps();
+  document.querySelectorAll('#bgfxEnableGroup .seg-btn').forEach(b=>b.classList.toggle('active', b.dataset.value===bgfxEnabled));
+}
+
+document.getElementById('bgfxAddCircle')?.addEventListener('click', ()=>{
+  const s = bgfxDefaultShape('circle');
+  bgfxShapes.push(s);
+  bgfxPersist(); bgfxSelect(s.id); bgfxRenderLive();
+  showToast('Круг добавлен');
+});
+document.getElementById('bgfxAddSquare')?.addEventListener('click', ()=>{
+  const s = bgfxDefaultShape('square');
+  bgfxShapes.push(s);
+  bgfxPersist(); bgfxSelect(s.id); bgfxRenderLive();
+  showToast('Квадрат добавлен');
+});
+document.getElementById('bgfxDeleteSelected')?.addEventListener('click', ()=>{
+  if(!bgfxSelectedId) { showToast('Сначала выберите фигуру'); return; }
+  bgfxShapes = bgfxShapes.filter(s=>s.id!==bgfxSelectedId);
+  bgfxSelectedId=null;
+  bgfxPersist(); renderBgfxEditor(); bgfxRenderLive();
+  showToast('Фигура удалена');
+});
+document.getElementById('bgfxClearBtn')?.addEventListener('click', ()=>{
+  if(!bgfxShapes.length) return;
+  if(!confirm('Удалить все фигуры фона?')) return;
+  bgfxShapes = []; bgfxSelectedId = null;
+  bgfxPersist(); renderBgfxEditor(); bgfxRenderLive();
+  showToast('Фон очищен');
+});
+document.getElementById('bgfxEnableGroup')?.addEventListener('click', e=>{
+  const b = e.target.closest('.seg-btn'); if(!b) return;
+  bgfxEnabled = b.dataset.value;
+  bgfxPersist();
+  document.querySelectorAll('#bgfxEnableGroup .seg-btn').forEach(x=>x.classList.toggle('active',x===b));
+  bgfxRenderLive();
+});
+
+/* Property sliders */
+function bgfxUpdateSelected(patch){
+  const s = bgfxShapes.find(x=>x.id===bgfxSelectedId);
+  if(!s) return;
+  Object.assign(s, patch);
+  bgfxPersist(); bgfxRenderPreview(); bgfxRenderLive(); bgfxRenderList();
+}
+document.getElementById('bgfxColor')?.addEventListener('input', e=>{
+  document.getElementById('bgfxColorVal').textContent = e.target.value;
+  bgfxUpdateSelected({color:e.target.value});
+});
+document.getElementById('bgfxSize')?.addEventListener('input', e=>{
+  const v=+e.target.value;
+  document.getElementById('bgfxSizeVal').textContent=v+'px';
+  bgfxUpdateSelected({size:v});
+});
+document.getElementById('bgfxRotate')?.addEventListener('input', e=>{
+  const v=+e.target.value;
+  document.getElementById('bgfxRotateVal').textContent=v+'°';
+  bgfxUpdateSelected({rotate:v});
+});
+document.getElementById('bgfxOpacity')?.addEventListener('input', e=>{
+  const v=+e.target.value;
+  document.getElementById('bgfxOpacityVal').textContent=v+'%';
+  bgfxUpdateSelected({opacity:v});
+});
+document.getElementById('bgfxBlur')?.addEventListener('input', e=>{
+  const v=+e.target.value;
+  document.getElementById('bgfxBlurVal').textContent=v+'px';
+  bgfxUpdateSelected({blur:v});
+});
+
+/* Click to select + list delete */
+document.getElementById('bgfxSvg')?.addEventListener('click', e=>{
+  const el = e.target.closest('.bgfx-shape');
+  if(el) bgfxSelect(el.dataset.id);
+});
+document.getElementById('bgfxList')?.addEventListener('click', e=>{
+  const del = e.target.closest('[data-del]');
+  if(del){
+    bgfxShapes = bgfxShapes.filter(s=>s.id!==del.dataset.del);
+    if(bgfxSelectedId===del.dataset.del) bgfxSelectedId=null;
+    bgfxPersist(); renderBgfxEditor(); bgfxRenderLive();
+    return;
+  }
+  const item = e.target.closest('.bgfx-item');
+  if(item) bgfxSelect(item.dataset.id);
+});
+
+/* Drag shapes on the canvas */
+(function bgfxDragSetup(){
+  const wrap = document.getElementById('bgfxCanvasWrap');
+  const svg = document.getElementById('bgfxSvg');
+  if(!wrap || !svg) return;
+  let dragId = null;
+
+  function toVbPoint(clientX, clientY){
+    const rect = wrap.getBoundingClientRect();
+    const px = (clientX - rect.left) / rect.width;
+    const py = (clientY - rect.top) / rect.height;
+    return { x: px*BGFX_VB.w, y: py*BGFX_VB.h };
+  }
+
+  function onDown(e){
+    const el = e.target.closest('.bgfx-shape');
+    if(!el) return;
+    dragId = el.dataset.id;
+    bgfxSelect(dragId);
+    e.preventDefault();
+  }
+  function onMove(e){
+    if(!dragId) return;
+    const point = e.touches ? e.touches[0] : e;
+    const p = toVbPoint(point.clientX, point.clientY);
+    const s = bgfxShapes.find(x=>x.id===dragId);
+    if(!s) return;
+    s.x = Math.max(0, Math.min(BGFX_VB.w, p.x));
+    s.y = Math.max(0, Math.min(BGFX_VB.h, p.y));
+    bgfxRenderPreview();
+  }
+  function onUp(){
+    if(!dragId) return;
+    dragId = null;
+    bgfxPersist();
+    bgfxRenderLive();
+  }
+  svg.addEventListener('mousedown', onDown);
+  svg.addEventListener('touchstart', onDown, {passive:false});
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, {passive:false});
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
+})();
+
+/* ============================================================
    INIT
 ============================================================ */
 (function init(){
   applyLayout();
   initTheme();
+  bgfxRenderLive();
+  loadExtraThemes();
   const founded=new Date(2026,2,11);
   const days=Math.max(0,Math.floor((new Date()-founded)/86400000));
   const dc=document.getElementById('daysCount');
@@ -2200,12 +2780,13 @@ const UPDATE_ICONS={'обновление':'megaphone','фикс':'tools','ив�
 function pickUpdateIcon(tag){ return UPDATE_ICONS[(tag||'').toLowerCase().trim()]||'document'; }
 function isUpdateTag(tag){ return (tag||'').toLowerCase().trim()==='обновление'; }
 
-function renderCardsInto(listId, items, emptyKey){
+function renderCardsInto(listId, items, emptyKey, unseenKeys){
   const list=document.getElementById(listId);
   if(!Array.isArray(items)||!items.length){ list.innerHTML='<div class="update-state">'+t(emptyKey)+'</div>'; return; }
   list.innerHTML=items.slice().reverse().map(u=>{
     const ic=pickUpdateIcon(u.tag);
-    return '<div class="update-card">'
+    const isNew = unseenKeys && unseenKeys.has(newsItemKey(u));
+    return '<div class="update-card'+(isNew?' is-new':'')+'">'
       +'<div class="update-date">'+escapeHtml(u.date||'')+'</div>'
       +'<div>'
       +(u.tag?'<span class="update-tag"><svg class="ic ic-sm"><use href="#ic-'+ic+'"/></svg> '+escapeHtml(u.tag)+'</span><br>':'')
@@ -2214,11 +2795,55 @@ function renderCardsInto(listId, items, emptyKey){
       +'</div></div>';
   }).join('');
 }
+/* ---- Seen-items tracking for "new" dot indicators ---- */
+function newsItemKey(u){ return (u.date||'')+'|'+(u.title||''); }
+function getSeenKeys(storageKey){ return sGetJSON(storageKey, []); }
+function markAllSeen(storageKey, items){
+  sSetJSON(storageKey, items.map(newsItemKey));
+}
+function computeUnseen(storageKey, items){
+  const seen = new Set(getSeenKeys(storageKey));
+  return items.filter(u=>!seen.has(newsItemKey(u)));
+}
+function setDotsVisible(ids, visible){
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.hidden = !visible;
+  });
+}
+function updateNavDots(){
+  const uUnseen = sGetJSON('isr-unseen-updates-count', 0);
+  const aUnseen = sGetJSON('isr-unseen-announce-count', 0);
+  const anyUnseen = uUnseen>0 || aUnseen>0;
+  setDotsVisible(['dotUpdatesDesktop','dotUpdatesMobMenu','dotUpdatesFooter'], uUnseen>0);
+  setDotsVisible(['dotAnnounceDesktop','dotAnnounceMobMenu','dotAnnounceFooter'], aUnseen>0);
+  setDotsVisible(['dotMoreBottomNav'], anyUnseen);
+}
+function markPageSeen(page){
+  if(page==='updates'){
+    const items = sGetJSON('isr-last-updates-items', []);
+    markAllSeen('isr-seen-updates', items.filter(u=>isUpdateTag(u.tag)));
+    sSetJSON('isr-unseen-updates-count', 0);
+    updateNavDots();
+  } else if(page==='announcements'){
+    const items = sGetJSON('isr-last-updates-items', []);
+    markAllSeen('isr-seen-announce', items.filter(u=>!isUpdateTag(u.tag)));
+    sSetJSON('isr-unseen-announce-count', 0);
+    updateNavDots();
+  }
+}
+
 function renderUpdates(items){
-  renderCardsInto('updatesList', (items||[]).filter(u=>isUpdateTag(u.tag)), 'error.updates');
+  const list = (items||[]).filter(u=>isUpdateTag(u.tag));
+  const unseenKeys = new Set(computeUnseen('isr-seen-updates', list).map(newsItemKey));
+  renderCardsInto('updatesList', list, 'error.updates', unseenKeys);
+  sSetJSON('isr-unseen-updates-count', unseenKeys.size);
 }
 function renderAnnouncements(items){
-  renderCardsInto('announceList', (items||[]).filter(u=>!isUpdateTag(u.tag)), 'error.announce');
+  const list = (items||[]).filter(u=>!isUpdateTag(u.tag));
+  const unseenKeys = new Set(computeUnseen('isr-seen-announce', list).map(newsItemKey));
+  renderCardsInto('announceList', list, 'error.announce', unseenKeys);
+  sSetJSON('isr-unseen-announce-count', unseenKeys.size);
 }
 function loadUpdates(){
   const uList=document.getElementById('updatesList');
@@ -2226,8 +2851,10 @@ function loadUpdates(){
   uList.innerHTML='<div class="update-state">'+t('loading.updates')+'</div>';
   if(aList) aList.innerHTML='<div class="update-state">'+t('loading.announce')+'</div>';
   fetch('json/updatesFILE',{cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(items=>{
+    sSetJSON('isr-last-updates-items', items);
     renderUpdates(items);
     renderAnnouncements(items);
+    updateNavDots();
   }).catch(()=>{
     uList.innerHTML='<div class="update-state">'+t('error.updates')+'</div>';
     if(aList) aList.innerHTML='<div class="update-state">'+t('error.announce')+'</div>';
@@ -2236,6 +2863,7 @@ function loadUpdates(){
 document.getElementById('refreshUpdates')?.addEventListener('click',loadUpdates);
 document.getElementById('refreshAnnounce')?.addEventListener('click',loadUpdates);
 loadUpdates();
+updateNavDots();
 
 const STAFF_PAL=[{bg:'var(--ink)',fg:'var(--yellow)'},{bg:'var(--yellow-deep)',fg:'var(--ink)'},{bg:'var(--steel-2)',fg:'var(--yellow)'}];
 function autoInitials(name){ const c=(name||'').replace(/[^a-zA-Zа-яА-ЯёЁ0-9]/g,''); return (c.slice(0,2)||'??').toUpperCase(); }
@@ -2391,13 +3019,19 @@ function openConsole(){
 }
 function closeConsole(){ document.getElementById('consoleOverlay').style.display='none'; }
 document.getElementById('consoleOverlay').addEventListener('click',e=>{ if(e.target.id==='consoleOverlay') closeConsole(); });
+document.getElementById('consoleClearBtn')?.addEventListener('click',()=>{ cOut.innerHTML=''; cIn.focus(); });
+
+const CONSOLE_COMMANDS = ['help','status','online','theme','themes','date','whoami','clear','cls','discord','exit','quit','settings','bg','ping','404',...PAGES];
 
 function runCommand(raw){
   const tr=raw.trim(); if(!tr) return;
   cPrint(tr,'cmd'); cmdHist.push(tr); cmdIdx=cmdHist.length;
-  const parts=tr.toLowerCase().split(/\s+/);
-  const cmd=parts[0]; const arg=parts[1];
-  if(cmd==='help'){ t('console.help').split('|').forEach(l=>cPrint(l,'sys')); }
+  const parts=tr.split(/\s+/);
+  const cmd=parts[0].toLowerCase(); const arg=(parts[1]||'').toLowerCase();
+  if(cmd==='help'){
+    t('console.help').split('|').forEach(l=>cPrint(l,'sys'));
+    'settings — открыть настройки|bg on/off/clear — фон-фигуры|ping — проверка соединения|404 — открыть страницу 404'.split('|').forEach(l=>cPrint(l,'sys'));
+  }
   else if(PAGES.includes(cmd)){ cPrint(t('console.goto')+cmd,'ok'); showPage(cmd); setTimeout(closeConsole,260); }
   else if(cmd==='status'){
     cPrint(t('console.modStatus'),'resp');
@@ -2413,14 +3047,22 @@ function runCommand(raw){
     fetch('https://discord.com/api/guilds/'+DISCORD_GUILD_ID+'/widget.json').then(r=>r.ok?r.json():Promise.reject(r)).then(d=>cPrint(t('discord.online').replace('{n}',d.presence_count),'ok')).catch(()=>cPrint(t('console.discordError')+')','err'));
   }
   else if(cmd==='theme'){
-    if(arg){ const th=BUILT_IN_THEMES.find(t=>t.id===arg); if(th){ applyBuiltInTheme(arg); cPrint(t('console.themeChanged')+arg,'ok'); } else cPrint('доступные темы: '+BUILT_IN_THEMES.map(t=>t.id).join(', '),'err'); }
+    if(arg){ const th=allBuiltInThemes().find(t=>t.id===arg); if(th){ applyBuiltInTheme(arg); cPrint(t('console.themeChanged')+arg,'ok'); } else cPrint('доступные темы: '+allBuiltInThemes().map(t=>t.id).join(', '),'err'); }
     else cPrint(t('console.themeUsage'),'err');
   }
-  else if(cmd==='themes'){ cPrint('Темы: '+BUILT_IN_THEMES.map(t=>t.id+' ('+t.name+')').join(', '),'resp'); }
+  else if(cmd==='themes'){ cPrint('Темы: '+allBuiltInThemes().map(t=>t.id+' ('+t.name+')').join(', '),'resp'); }
   else if(cmd==='date'){ cPrint(new Date().toLocaleString('ru-RU'),'resp'); }
   else if(cmd==='whoami'){ cPrint(t('console.whoami'),'resp'); }
   else if(cmd==='clear'||cmd==='cls'){ cOut.innerHTML=''; }
   else if(cmd==='discord'){ cPrint('открываю Discord...','ok'); window.open('https://discord.gg/hwzNAGqSbf','_blank'); }
+  else if(cmd==='settings'){ cPrint('открываю настройки...','ok'); closeConsole(); openSettings(); }
+  else if(cmd==='bg'){
+    if(arg==='on'||arg==='off'){ bgfxEnabled=arg; bgfxPersist(); bgfxRenderLive(); cPrint('фон-фигуры: '+arg,'ok'); }
+    else if(arg==='clear'){ bgfxShapes=[]; bgfxSelectedId=null; bgfxPersist(); bgfxRenderLive(); cPrint('фон-фигуры очищены','ok'); }
+    else cPrint('использование: bg <on|off|clear>','err');
+  }
+  else if(cmd==='ping'){ cPrint('измерение задержки...','sys'); const t0=performance.now(); fetch('json/updatesFILE',{cache:'no-store'}).then(()=>cPrint('pong · '+Math.round(performance.now()-t0)+'мс','ok')).catch(()=>cPrint('нет соединения','err')); }
+  else if(cmd==='404'){ cPrint('открываю страницу 404...','ok'); window.location.href='404.html'; }
   else if(cmd==='exit'||cmd==='quit'){ closeConsole(); }
   else { cPrint(t('console.unknown')+cmd+t('console.unknownHint'),'err'); }
 }
@@ -2428,6 +3070,14 @@ cIn.addEventListener('keydown',e=>{
   if(e.key==='Enter'){ runCommand(cIn.value); cIn.value=''; }
   else if(e.key==='ArrowUp'){ e.preventDefault(); if(cmdHist.length){ cmdIdx=Math.max(0,cmdIdx-1); cIn.value=cmdHist[cmdIdx]||''; } }
   else if(e.key==='ArrowDown'){ e.preventDefault(); cmdIdx=Math.min(cmdHist.length,cmdIdx+1); cIn.value=cmdHist[cmdIdx]||''; }
+  else if(e.key==='Tab'){
+    e.preventDefault();
+    const val=cIn.value.toLowerCase();
+    if(!val) return;
+    const matches=CONSOLE_COMMANDS.filter(c=>c.startsWith(val));
+    if(matches.length===1){ cIn.value=matches[0]+' '; }
+    else if(matches.length>1){ cPrint(matches.join('  '),'sys'); }
+  }
 });
 
 /* ============================================================
