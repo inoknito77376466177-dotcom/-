@@ -747,7 +747,9 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
 .color-row label { flex:1;font-size:13px;color:var(--ink); }
 .color-row .color-desc { font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-soft);flex:1; }
 .color-row input[type=color] { width:40px;height:32px;border:2px solid var(--line-strong);background:none;padding:2px;cursor:pointer;border-radius:4px; }
-.color-row .color-val { font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-soft);width:72px;text-align:right; }
+.color-val { font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-soft);width:78px;text-align:right;background:var(--paper-2);border:1px solid var(--line-strong);border-radius:4px;padding:5px 6px;text-transform:uppercase; }
+.color-val:focus { outline:none;border-color:var(--yellow-deep);color:var(--ink); }
+.color-val.invalid { border-color:#e06b5a; }
 
 /* Sliders */
 .slider-row { display:flex;align-items:center;gap:10px;padding:8px 0; }
@@ -775,6 +777,21 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
   content:""; display:inline-block; width:7px;height:7px;border-radius:50%;
   background:var(--yellow); margin-right:8px; vertical-align:middle;
 }
+
+/* Shapes-keep confirm modal */
+.shapes-confirm-overlay { position:fixed;inset:0;background:rgba(10,9,7,.72);display:none;align-items:center;justify-content:center;z-index:10050;padding:16px; }
+.shapes-confirm-overlay.open { display:flex; }
+.shapes-confirm-panel {
+  width:min(420px,94vw);
+  background:var(--paper);
+  border:2px solid var(--ink);
+  border-radius:var(--radius);
+  padding:20px;
+}
+.shapes-confirm-title { font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.04em;font-weight:600;font-size:15px;margin-bottom:8px; }
+.shapes-confirm-text { font-size:13px;color:var(--ink-soft);line-height:1.5;margin-bottom:16px; }
+.shapes-confirm-actions { display:flex;gap:8px;flex-wrap:wrap; }
+.shapes-confirm-actions button { flex:1; }
 
 /* Background shapes editor */
 .bgfx-canvas-wrap { position:relative;width:100%;aspect-ratio:16/9;background:var(--paper);border:2px solid var(--line-strong);border-radius:var(--radius);overflow:hidden;touch-action:none; }
@@ -1517,12 +1534,22 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
           <div class="slider-row">
             <label>Цвет</label>
             <input type="color" id="bgfxColor" value="#F5C400" style="width:40px;height:32px;border:2px solid var(--line-strong);background:none;padding:2px;cursor:pointer;border-radius:4px;">
-            <span class="sv" id="bgfxColorVal">#F5C400</span>
+            <input type="text" class="color-val" id="bgfxColorVal" value="#F5C400" maxlength="7" spellcheck="false" autocomplete="off" style="width:78px;">
           </div>
           <div class="slider-row">
             <label>Размер</label>
-            <input type="range" id="bgfxSize" min="10" max="400" value="120" step="1">
-            <span class="sv" id="bgfxSizeVal">120px</span>
+            <input type="range" id="bgfxScale" min="10" max="400" value="120" step="1">
+            <span class="sv" id="bgfxScaleVal">120px</span>
+          </div>
+          <div class="slider-row">
+            <label>Ширина</label>
+            <input type="range" id="bgfxWidth" min="10" max="400" value="120" step="1">
+            <span class="sv" id="bgfxWidthVal">120px</span>
+          </div>
+          <div class="slider-row">
+            <label>Высота</label>
+            <input type="range" id="bgfxHeight" min="10" max="400" value="120" step="1">
+            <span class="sv" id="bgfxHeightVal">120px</span>
           </div>
           <div class="slider-row">
             <label>Поворот</label>
@@ -1557,6 +1584,17 @@ footer { background:var(--steel);color:var(--steel-text-dim);padding:40px 24px 0
         <div class="bgfx-hint">Перетаскивайте фигуры прямо на превью, чтобы менять положение. Клик по фигуре выбирает её для редактирования свойств справа. Фон и его фигуры входят в код темы — при экспорте они передаются вместе с цветами.</div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="shapes-confirm-overlay" id="shapesConfirmOverlay">
+  <div class="shapes-confirm-panel">
+    <div class="shapes-confirm-title">Фигуры фона</div>
+    <div class="shapes-confirm-text">На сайте сейчас есть фигуры фона. Убрать их вместе со сменой темы или оставить как есть?</div>
+    <div class="shapes-confirm-actions">
+      <button class="btn-outline" id="shapesConfirmKeep">Оставить фигуры</button>
+      <button class="btn-danger" id="shapesConfirmRemove">Убрать фигуры</button>
     </div>
   </div>
 </div>
@@ -1905,14 +1943,34 @@ function guessFontForVars(vars){
 }
 
 function applySavedTheme(name){
-  const saved = sGetJSON('isr-saved-themes', []);
-  const th = saved.find(t=>t.name===name);
-  if(!th) return;
-  applyCustomTheme(th.vars, 'saved:'+name);
-  if(th.font){
-    if(sGet('isr-font-locked')!=='1') applyThemeFont(th.font);
-  }
-  showToast('Тема «'+name+'» применена');
+  confirmShapesThenApply((keepShapes)=>{
+    const saved = sGetJSON('isr-saved-themes', []);
+    const th = saved.find(t=>t.name===name);
+    if(!th) return;
+    applyCustomTheme(th.vars, 'saved:'+name);
+    if(th.font){
+      if(sGet('isr-font-locked')!=='1') applyThemeFont(th.font);
+    }
+    /* Если пользователь только что попросил убрать текущие фигуры, не подменяем их
+       фигурами из сохранённой темы — иначе "убрать" не сработает, если целевая
+       тема тоже содержит свои фигуры. */
+    if(keepShapes) bgfxApplyShapesFromTheme(th);
+    showToast('Тема «'+name+'» применена');
+  });
+}
+
+/* Восстанавливает фигуры фона, сохранённые вместе с темой (если они там есть).
+   Если у сохранённой темы своих фигур нет, ничего не трогаем — считается,
+   что решение "оставить/убрать" текущие фигуры уже было принято пользователем
+   через shapesConfirmOverlay до вызова этой функции. */
+function bgfxApplyShapesFromTheme(th){
+  if(!th || !Array.isArray(th.shapes) || !th.shapes.length) return;
+  bgfxShapes = th.shapes.map(s=>({...s, id: bgfxUid()}));
+  bgfxEnabled = th.bgEnabled || 'on';
+  bgfxSelectedId = null;
+  bgfxPersist();
+  bgfxRenderLive();
+  if(document.getElementById('settingsOverlay')?.style.display==='flex') renderBgfxEditor();
 }
 
 function resolveBaseMode(){
@@ -1927,7 +1985,14 @@ function initTheme(){
   if(activeThemeId && activeThemeId.startsWith('saved:')){
     const name = activeThemeId.replace('saved:','');
     const th = saved.find(t=>t.name===name);
-    if(th){ applyCustomTheme(th.vars,'saved:'+name); return; }
+    if(th){
+      applyCustomTheme(th.vars,'saved:'+name);
+      if(th.font && sGet('isr-font-locked')!=='1') applyThemeFont(th.font);
+      /* При обычной загрузке страницы фигуры темы уже лежат в isr-bgfx-shapes
+         (bgfxPersist сохраняет их сразу при применении/сохранении), поэтому
+         спрашивать пользователя тут не нужно — это не активное переключение темы. */
+      return;
+    }
   }
   if(activeThemeId==='custom'){
     applyCustomTheme(customThemeVars,'custom'); return;
@@ -1961,8 +2026,10 @@ function buildThemePresets(){
       </div>
       <div class="pname">${th.name}</div>`;
     btn.addEventListener('click',()=>{
-      applyBuiltInTheme(th.id);
-      showToast('Тема «'+th.name+'» применена');
+      confirmShapesThenApply(()=>{
+        applyBuiltInTheme(th.id);
+        showToast('Тема «'+th.name+'» применена');
+      });
     });
     container.appendChild(btn);
   });
@@ -1991,17 +2058,48 @@ function buildCustomEditor(){
       <label>${f.label}</label>
       <span class="color-desc">${f.var}</span>
       <input type="color" value="${hex}" data-var="${f.var}">
-      <span class="color-val">${hex}</span>`;
+      <input type="text" class="color-val" value="${hex}" maxlength="7" spellcheck="false" autocomplete="off">`;
     const inp = row.querySelector('input[type=color]');
-    const valSpan = row.querySelector('.color-val');
-    inp.addEventListener('input',()=>{
-      valSpan.textContent = inp.value;
+    const valInp = row.querySelector('.color-val');
+    const commitFromPicker = ()=>{
+      valInp.value = inp.value.toUpperCase();
+      valInp.classList.remove('invalid');
       customThemeVars[f.var] = inp.value;
       /* Правка любого поля сразу переводит активную тему в режим "custom",
          иначе код темы и localStorage продолжают ссылаться на встроенную тему
          (или на старую сохранённую), а правки нигде не фиксируются. */
       applyCustomTheme({...customThemeVars}, 'custom', {recalcFont:false});
+    };
+    inp.addEventListener('input', commitFromPicker);
+    /* Ввод/вставка hex вручную в текстовое поле — принимаем как #RGB, так и #RRGGBB,
+       с ведущей решёткой или без неё. Пока значение неполное/некорректное, просто
+       подсвечиваем поле и ничего не применяем — так пользователь может спокойно
+       достричь курсор и вставить код, не теряя фокус на каждом промежуточном символе. */
+    const tryCommitFromText = ()=>{
+      let v = valInp.value.trim();
+      if(v && !v.startsWith('#')) v = '#'+v;
+      const isHex3 = /^#[0-9a-fA-F]{3}$/.test(v);
+      const isHex6 = /^#[0-9a-fA-F]{6}$/.test(v);
+      if(!isHex3 && !isHex6){ valInp.classList.add('invalid'); return false; }
+      const full = isHex3 ? cssColorToHex(v) : v.toUpperCase();
+      valInp.classList.remove('invalid');
+      valInp.value = full.toUpperCase();
+      inp.value = full;
+      customThemeVars[f.var] = full;
+      applyCustomTheme({...customThemeVars}, 'custom', {recalcFont:false});
+      return true;
+    };
+    valInp.addEventListener('input', ()=>{ tryCommitFromText(); });
+    valInp.addEventListener('blur', ()=>{
+      /* Если после потери фокуса значение так и осталось невалидным, откатываем
+         поле к последнему реально применённому цвету, чтобы не оставлять на экране
+         кривой hex, который никуда не привязан. */
+      if(!tryCommitFromText()){
+        valInp.value = customThemeVars[f.var].toUpperCase();
+        valInp.classList.remove('invalid');
+      }
     });
+    valInp.addEventListener('keydown', e=>{ if(e.key==='Enter') valInp.blur(); });
     container.appendChild(row);
   });
 }
@@ -2009,7 +2107,7 @@ function buildCustomEditor(){
 function syncCustomEditorInputs(vars){
   document.querySelectorAll('#customEditor input[type=color]').forEach(inp=>{
     const v = vars[inp.dataset.var];
-    if(v){ inp.value = cssColorToHex(v); const s=inp.nextElementSibling; if(s) s.textContent=inp.value; }
+    if(v){ inp.value = cssColorToHex(v); const s=inp.nextElementSibling; if(s) s.value=inp.value.toUpperCase(); }
   });
 }
 
@@ -2075,19 +2173,28 @@ document.querySelectorAll('.stab').forEach(tab=>{
 /* Base mode seg */
 document.getElementById('baseModeGroup').addEventListener('click',e=>{
   const btn=e.target.closest('.seg-btn'); if(!btn) return;
-  baseMode=btn.dataset.value;
-  sSet('isr-base-mode',baseMode);
+  const applyBaseMode=()=>{
+    baseMode=btn.dataset.value;
+    sSet('isr-base-mode',baseMode);
+    if(!activeThemeId.startsWith('saved:') && activeThemeId!=='custom'){
+      applyBuiltInTheme(resolveBaseMode());
+    }
+    updatePresetUI();
+    showToast(btn.textContent.trim());
+  };
   if(!activeThemeId.startsWith('saved:') && activeThemeId!=='custom'){
-    applyBuiltInTheme(resolveBaseMode());
+    confirmShapesThenApply(applyBaseMode);
+  } else {
+    applyBaseMode();
   }
-  updatePresetUI();
-  showToast(btn.textContent.trim());
 });
 
 /* Apply custom */
 document.getElementById('applyCustomBtn').addEventListener('click',()=>{
-  applyCustomTheme({...customThemeVars},'custom');
-  showToast('Тема применена');
+  confirmShapesThenApply(()=>{
+    applyCustomTheme({...customThemeVars},'custom');
+    showToast('Тема применена');
+  });
 });
 
 /* Save custom */
@@ -2096,7 +2203,17 @@ document.getElementById('saveCustomBtn').addEventListener('click',()=>{
   if(!name){ showToast('Введите название темы'); return; }
   let saved=sGetJSON('isr-saved-themes',[]);
   saved=saved.filter(t=>t.name!==name);
-  saved.push({name, vars:{...customThemeVars}, font: (typeof layoutFont!=='undefined'?layoutFont:null)});
+  /* Сохраняем и фигуры фона вместе с темой — так же, как их несёт код темы (ISR2),
+     чтобы применение сохранённой темы могло полностью восстановить фон. */
+  const shapesNow = (typeof bgfxShapes!=='undefined') ? bgfxShapes.map(s=>({...s})) : [];
+  const bgEnabledNow = (typeof bgfxEnabled!=='undefined') ? bgfxEnabled : 'on';
+  saved.push({
+    name,
+    vars:{...customThemeVars},
+    font: (typeof layoutFont!=='undefined'?layoutFont:null),
+    shapes: shapesNow,
+    bgEnabled: bgEnabledNow
+  });
   sSetJSON('isr-saved-themes',saved);
   buildSavedThemes();
   showToast('Тема «'+name+'» сохранена!');
@@ -2157,18 +2274,36 @@ function encodeThemeCode(vars){
 
   bytes.push(clampByte(shapes.length));
   shapes.forEach(s=>{
-    bytes.push(s.type==='circle' ? 0 : 1);
-    pushU16(bytes, s.x);
-    pushU16(bytes, s.y);
-    pushU16(bytes, s.size);
-    pushU16(bytes, s.rotate);
-    bytes.push(clampByte(s.opacity));
-    bytes.push(clampByte(s.blur));
+    bgfxNormalizeShape(s);
+    /* Компактная битовая упаковка полей фигуры вместо "в лоб" по 2 байта на каждое —
+       x/y/width/height не превышают 1023, поэтому хватает 10 бит на каждое поле;
+       rotate храним шагами по 2° (0-179), поэтому хватает 1 байта вместо 2х.
+       Итого 5 байт на x+y+width+height вместо 8. */
+    const bx = Math.max(0, Math.min(1023, Math.round(s.x)));
+    const by = Math.max(0, Math.min(1023, Math.round(s.y)));
+    const bw = Math.max(0, Math.min(1023, Math.round(s.width)));
+    const bh = Math.max(0, Math.min(1023, Math.round(s.height)));
+    bytes.push((bx>>2)&0xFF);
+    bytes.push(((bx&0x3)<<6) | ((by>>4)&0x3F));
+    bytes.push(((by&0xF)<<4) | ((bw>>6)&0xF));
+    bytes.push(((bw&0x3F)<<2) | ((bh>>8)&0x3));
+    bytes.push(bh&0xFF);
+
+    const rotateStep = Math.max(0, Math.min(179, Math.round(s.rotate/2)));
+    bytes.push(rotateStep);
+
+    /* type(1 бит) + opacity(7 бит, 0-100) в один байт; blur(6 бит, 0-40 с запасом) в другой */
+    const typeBit = s.type==='circle' ? 0 : 1;
+    const op = Math.max(0, Math.min(100, Math.round(s.opacity)));
+    bytes.push((typeBit<<7) | (op&0x7F));
+    const bl = Math.max(0, Math.min(63, Math.round(s.blur)));
+    bytes.push(bl&0x3F);
+
     const [r,g,b] = hexToRGB(cssColorToHex(s.color || '#F5C400'));
     bytes.push(r,g,b);
   });
 
-  return 'ISR2-' + bytesToBase64Url(bytes);
+  return 'ISR3-' + bytesToBase64Url(bytes);
 }
 
 function decodeThemeCodeV2(b64part){
@@ -2201,7 +2336,59 @@ function decodeThemeCodeV2(b64part){
       const opacity = buf[i++];
       const blur = buf[i++];
       const color = rgbToHex(buf[i], buf[i+1], buf[i+2]); i+=3;
-      shapes.push({ id: bgfxUid(), type, x, y, size, rotate, opacity, blur, color });
+      /* Старый ISR2-формат хранил один общий "size" — растягиваем в width=height=size,
+         чтобы старые коды по-прежнему открывались корректно. */
+      shapes.push({ id: bgfxUid(), type, x, y, width: size, height: size, rotate, opacity, blur, color });
+    }
+
+    return {
+      vars,
+      layout: { radius, scale, font, fontLocked, stripe, noise },
+      bg: { enabled: bgEnabled, shapes }
+    };
+  } catch(e){ return null; }
+}
+
+/* ISR3 — как ISR2, но фигуры хранят раздельные width и height (2+2 байта вместо
+   одного size в 2 байта), чтобы фигуры можно было растягивать не только по одной
+   стороне. */
+function decodeThemeCodeV3(b64part){
+  try {
+    const buf = base64UrlToBytes(b64part);
+    let i = 0;
+    const vars = {};
+    COLOR_FIELDS.forEach(f=>{
+      vars[f.var] = rgbToHex(buf[i], buf[i+1], buf[i+2]);
+      i += 3;
+    });
+    const radius = buf[i++];
+    const scale = buf[i++];
+    const flags = buf[i++];
+    const fontIdx = flags & 0x3;
+    const fontLocked = !!((flags>>2) & 1);
+    const stripe = ((flags>>3) & 1) ? 'on' : 'off';
+    const noise = ((flags>>4) & 1) ? 'on' : 'off';
+    const bgEnabled = ((flags>>5) & 1) ? 'on' : 'off';
+    const font = THEME_CODE_FONTS[fontIdx] || THEME_CODE_FONTS[0];
+
+    const shapeCount = buf[i++];
+    const shapes = [];
+    for(let s=0; s<shapeCount; s++){
+      const b0 = buf[i++], b1 = buf[i++], b2 = buf[i++], b3 = buf[i++], b4 = buf[i++];
+      const x = (b0<<2) | (b1>>6);
+      const y = ((b1&0x3F)<<4) | (b2>>4);
+      const width = ((b2&0xF)<<6) | (b3>>2);
+      const height = ((b3&0x3)<<8) | b4;
+
+      const rotate = buf[i++] * 2;
+
+      const typeOp = buf[i++];
+      const type = (typeOp>>7) ? 'square' : 'circle';
+      const opacity = typeOp & 0x7F;
+      const blur = buf[i++] & 0x3F;
+
+      const color = rgbToHex(buf[i], buf[i+1], buf[i+2]); i+=3;
+      shapes.push({ id: bgfxUid(), type, x, y, width, height, rotate, opacity, blur, color });
     }
 
     return {
@@ -2214,6 +2401,9 @@ function decodeThemeCodeV2(b64part){
 
 function decodeThemeCode(code){
   const tr = (code||'').trim();
+  if(tr.startsWith('ISR3-')){
+    return decodeThemeCodeV3(tr.slice(5));
+  }
   if(tr.startsWith('ISR2-')){
     return decodeThemeCodeV2(tr.slice(5));
   }
@@ -2272,6 +2462,16 @@ document.getElementById('importThemeCodeBtn').addEventListener('click',()=>{
   if(bg){
     bgfxEnabled = bg.enabled || 'on';
     bgfxShapes = Array.isArray(bg.shapes) ? bg.shapes : [];
+    bgfxPersist();
+    renderBgfxEditor();
+    bgfxRenderLive();
+  } else {
+    /* Старый ISR1-формат хранит только цвета и вообще не знает о фоне/фигурах —
+       раньше это молча оставляло текущие фигуры на месте, что выглядело так,
+       будто ISR1-код "принёс" чужой фон. Явно очищаем фон при импорте такого кода,
+       чтобы применённая тема полностью соответствовала тому, что реально есть в коде. */
+    bgfxShapes = [];
+    bgfxSelectedId = null;
     bgfxPersist();
     renderBgfxEditor();
     bgfxRenderLive();
@@ -2411,7 +2611,8 @@ function bgfxDefaultShape(type){
     type, // 'circle' | 'square'
     x: BGFX_VB.w/2 + (Math.random()*140-70),
     y: BGFX_VB.h/2 + (Math.random()*80-40),
-    size: 120,
+    width: 120,
+    height: 120,
     rotate: 0,
     opacity: 35,
     blur: 0,
@@ -2419,17 +2620,27 @@ function bgfxDefaultShape(type){
   };
 }
 
+/* Старые сохранённые/присланные по коду фигуры хранят один общий "size" вместо
+   раздельных width/height — приводим их к новому формату, чтобы растягивание
+   работало и для тем, сохранённых до этого обновления. */
+function bgfxNormalizeShape(s){
+  if(s.width==null) s.width = s.size!=null ? s.size : 120;
+  if(s.height==null) s.height = s.size!=null ? s.size : 120;
+  return s;
+}
+
 function bgfxShapeSvg(s, interactive){
-  const half = s.size/2;
+  bgfxNormalizeShape(s);
+  const halfW = s.width/2, halfH = s.height/2;
   const common = `data-id="${s.id}" class="bgfx-shape${s.id===bgfxSelectedId?' selected':''}" `
     + `fill="${s.color}" opacity="${(s.opacity/100).toFixed(2)}" `
     + `style="filter:${s.blur>0?`blur(${s.blur}px)`:'none'}" `
     + `transform="translate(${s.x} ${s.y}) rotate(${s.rotate})"`;
   let shape;
   if(s.type==='circle'){
-    shape = `<circle ${common} cx="0" cy="0" r="${half}"></circle>`;
+    shape = `<ellipse ${common} cx="0" cy="0" rx="${halfW}" ry="${halfH}"></ellipse>`;
   } else {
-    shape = `<rect ${common} x="${-half}" y="${-half}" width="${s.size}" height="${s.size}"></rect>`;
+    shape = `<rect ${common} x="${-halfW}" y="${-halfH}" width="${s.width}" height="${s.height}"></rect>`;
   }
   return shape;
 }
@@ -2471,17 +2682,61 @@ function bgfxRenderProps(){
   const props = document.getElementById('bgfxProps');
   const s = bgfxShapes.find(x=>x.id===bgfxSelectedId);
   if(!s){ if(props) props.style.display='none'; return; }
+  bgfxNormalizeShape(s);
   props.style.display='flex';
   document.getElementById('bgfxColor').value = s.color;
-  document.getElementById('bgfxColorVal').textContent = s.color;
-  document.getElementById('bgfxSize').value = s.size;
-  document.getElementById('bgfxSizeVal').textContent = s.size+'px';
+  document.getElementById('bgfxColorVal').value = s.color.toUpperCase();
+  document.getElementById('bgfxColorVal').classList.remove('invalid');
+  /* "Размер" — не отдельное поле фигуры, а ползунок-масштаб: показываем средний
+     размер (округлённое среднее width/height) как отправную точку. Двигая его,
+     пользователь пропорционально растягивает/сжимает оба поля разом — см.
+     обработчик input ниже, где используется bgfxScaleBaseW/H. */
+  const avgSize = Math.round((s.width + s.height)/2);
+  document.getElementById('bgfxScale').value = Math.max(10, Math.min(400, avgSize));
+  document.getElementById('bgfxScaleVal').textContent = avgSize+'px';
+  document.getElementById('bgfxWidth').value = s.width;
+  document.getElementById('bgfxWidthVal').textContent = s.width+'px';
+  document.getElementById('bgfxHeight').value = s.height;
+  document.getElementById('bgfxHeightVal').textContent = s.height+'px';
   document.getElementById('bgfxRotate').value = s.rotate;
   document.getElementById('bgfxRotateVal').textContent = s.rotate+'°';
   document.getElementById('bgfxOpacity').value = s.opacity;
   document.getElementById('bgfxOpacityVal').textContent = s.opacity+'%';
   document.getElementById('bgfxBlur').value = s.blur;
   document.getElementById('bgfxBlurVal').textContent = s.blur+'px';
+}
+
+/* Спрашивает пользователя, оставить фигуры фона или убрать их, ПЕРЕД сменой темы —
+   но только если на сайте прямо сейчас реально есть фигуры (иначе спрашивать нечего,
+   применяем тему сразу же). runApply — функция, которая непосредственно применяет
+   новую тему; она получает флаг keepShapes и решает, восстанавливать ли фигуры
+   сохранённой темы или нет. */
+function confirmShapesThenApply(runApply){
+  const hasShapes = (typeof bgfxShapes!=='undefined') && bgfxShapes.length>0 && bgfxEnabled!=='off';
+  if(!hasShapes){ runApply(true); return; }
+  const overlay = document.getElementById('shapesConfirmOverlay');
+  if(!overlay){ runApply(true); return; }
+  overlay.classList.add('open');
+  const keepBtn = document.getElementById('shapesConfirmKeep');
+  const removeBtn = document.getElementById('shapesConfirmRemove');
+  const cleanup = ()=>{
+    overlay.classList.remove('open');
+    keepBtn.removeEventListener('click', onKeep);
+    removeBtn.removeEventListener('click', onRemove);
+    overlay.removeEventListener('click', onBackdrop);
+  };
+  const onKeep = ()=>{ cleanup(); runApply(true); };
+  const onRemove = ()=>{
+    cleanup();
+    bgfxShapes = []; bgfxSelectedId = null;
+    bgfxPersist(); bgfxRenderLive();
+    if(document.getElementById('settingsOverlay')?.style.display==='flex') renderBgfxEditor();
+    runApply(false);
+  };
+  const onBackdrop = (e)=>{ if(e.target===overlay){ cleanup(); runApply(true); } };
+  keepBtn.addEventListener('click', onKeep);
+  removeBtn.addEventListener('click', onRemove);
+  overlay.addEventListener('click', onBackdrop);
 }
 
 function bgfxPersist(){
@@ -2545,13 +2800,92 @@ function bgfxUpdateSelected(patch){
   bgfxPersist(); bgfxRenderPreview(); bgfxRenderLive(); bgfxRenderList();
 }
 document.getElementById('bgfxColor')?.addEventListener('input', e=>{
-  document.getElementById('bgfxColorVal').textContent = e.target.value;
+  document.getElementById('bgfxColorVal').value = e.target.value.toUpperCase();
+  document.getElementById('bgfxColorVal').classList.remove('invalid');
   bgfxUpdateSelected({color:e.target.value});
 });
-document.getElementById('bgfxSize')?.addEventListener('input', e=>{
+/* Ручной ввод/вставка hex-кода цвета фигуры — та же логика валидации, что и в
+   основном редакторе темы: принимаем #RGB и #RRGGBB, с решёткой или без. */
+(function(){
+  const valInp = document.getElementById('bgfxColorVal');
+  const picker = document.getElementById('bgfxColor');
+  if(!valInp || !picker) return;
+  const tryCommit = ()=>{
+    let v = valInp.value.trim();
+    if(v && !v.startsWith('#')) v = '#'+v;
+    const isHex3 = /^#[0-9a-fA-F]{3}$/.test(v);
+    const isHex6 = /^#[0-9a-fA-F]{6}$/.test(v);
+    if(!isHex3 && !isHex6){ valInp.classList.add('invalid'); return false; }
+    const full = (isHex3 ? cssColorToHex(v) : v).toUpperCase();
+    valInp.classList.remove('invalid');
+    valInp.value = full;
+    picker.value = full;
+    bgfxUpdateSelected({color:full});
+    return true;
+  };
+  valInp.addEventListener('input', tryCommit);
+  valInp.addEventListener('blur', ()=>{
+    if(!tryCommit()){
+      const s = bgfxShapes.find(x=>x.id===bgfxSelectedId);
+      if(s){ valInp.value = s.color.toUpperCase(); valInp.classList.remove('invalid'); }
+    }
+  });
+  valInp.addEventListener('keydown', e=>{ if(e.key==='Enter') valInp.blur(); });
+})();
+/* "Размер" — пропорционально масштабирует width и height одновременно, отталкиваясь
+   от их текущего соотношения на момент начала перетаскивания ползунка (pointerdown),
+   а не от абсолютного значения — так фигуры, вытянутые в одну сторону, не "прыгают"
+   в квадрат при первом же движении ползунка. */
+(function(){
+  const scaleInp = document.getElementById('bgfxScale');
+  if(!scaleInp) return;
+  let baseW = null, baseH = null, baseAvg = null;
+  const startDrag = ()=>{
+    const s = bgfxShapes.find(x=>x.id===bgfxSelectedId);
+    if(!s) return;
+    bgfxNormalizeShape(s);
+    baseW = s.width; baseH = s.height;
+    baseAvg = Math.max(1, (baseW+baseH)/2);
+  };
+  scaleInp.addEventListener('pointerdown', startDrag);
+  scaleInp.addEventListener('focus', startDrag);
+  scaleInp.addEventListener('input', e=>{
+    if(baseAvg==null) startDrag();
+    const v = +e.target.value;
+    document.getElementById('bgfxScaleVal').textContent = v+'px';
+    const factor = v / baseAvg;
+    const newW = Math.max(10, Math.min(400, Math.round(baseW*factor)));
+    const newH = Math.max(10, Math.min(400, Math.round(baseH*factor)));
+    document.getElementById('bgfxWidth').value = newW;
+    document.getElementById('bgfxWidthVal').textContent = newW+'px';
+    document.getElementById('bgfxHeight').value = newH;
+    document.getElementById('bgfxHeightVal').textContent = newH+'px';
+    bgfxUpdateSelected({width:newW, height:newH});
+  });
+  scaleInp.addEventListener('pointerup', ()=>{ baseW=baseH=baseAvg=null; });
+  scaleInp.addEventListener('blur', ()=>{ baseW=baseH=baseAvg=null; });
+})();
+document.getElementById('bgfxWidth')?.addEventListener('input', e=>{
   const v=+e.target.value;
-  document.getElementById('bgfxSizeVal').textContent=v+'px';
-  bgfxUpdateSelected({size:v});
+  document.getElementById('bgfxWidthVal').textContent=v+'px';
+  bgfxUpdateSelected({width:v});
+  const s = bgfxShapes.find(x=>x.id===bgfxSelectedId);
+  if(s){
+    const avg = Math.round((s.width+s.height)/2);
+    document.getElementById('bgfxScale').value = Math.max(10, Math.min(400, avg));
+    document.getElementById('bgfxScaleVal').textContent = avg+'px';
+  }
+});
+document.getElementById('bgfxHeight')?.addEventListener('input', e=>{
+  const v=+e.target.value;
+  document.getElementById('bgfxHeightVal').textContent=v+'px';
+  bgfxUpdateSelected({height:v});
+  const s = bgfxShapes.find(x=>x.id===bgfxSelectedId);
+  if(s){
+    const avg = Math.round((s.width+s.height)/2);
+    document.getElementById('bgfxScale').value = Math.max(10, Math.min(400, avg));
+    document.getElementById('bgfxScaleVal').textContent = avg+'px';
+  }
 });
 document.getElementById('bgfxRotate')?.addEventListener('input', e=>{
   const v=+e.target.value;
